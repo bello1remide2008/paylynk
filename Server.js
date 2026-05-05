@@ -22,7 +22,7 @@ const app = express();
 // 🔥 MIDDLEWARE
 app.use(express.json());
 app.use(cors({
-  origin: 'https://paylynk-fsfg.vercel.app',
+  origin: 'https://www.paylynkds.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   
   credentials: true
