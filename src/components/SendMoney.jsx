@@ -96,7 +96,7 @@ const SendMoney =  () => {
 
   // Continue Button
   const handleSend = async () => {
-    await fetch("/api/transaction/send", {
+    await fetch("https://paylynk-1.onrender.com/api/transaction/send", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
