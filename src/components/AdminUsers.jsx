@@ -11,7 +11,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       const res = await fetch(
-        `http://paylynk-1.onrender.com/api/admin/users?search=${search}`,
+        `https://paylynk-1.onrender.com/api/admin/users?search=${search}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,7 +36,7 @@ const AdminUsers = () => {
 
     if (!message) return;
 
-    await fetch("http://paylynk-1.onrender.com/api/admin/send-mail/:id", {
+    await fetch("https://paylynk-1.onrender.com/api/admin/send-mail/:id", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const AdminUsers = () => {
     });
 
     alert("Mail sent");
-    await fetch("http://paylynk-1.onrender.com/api/admin/bulk-email", {
+    await fetch("https://paylynk-1.onrender.com/api/admin/bulk-email", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const AdminUsers = () => {
 
   // 🔥 SEND OTP
   const sendOtp = async (userId) => {
-    await fetch("http://paylynk-1.onrender.com/api/admin/send-otp", {
+    await fetch("https://paylynk-1.onrender.com/api/admin/send-otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
