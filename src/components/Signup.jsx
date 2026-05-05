@@ -34,7 +34,7 @@ const handleContinue = async (e) => {
       password: form.password,
     });
 
-    const res = await fetch("http://localhost:5000/api/auth/register-init", {
+    const res = await fetch("http://paylynk-1.onrender.com/api/auth/register-init", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
