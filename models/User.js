@@ -49,11 +49,13 @@ isBlocked: {
 
 
 // 🔐 Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// 🔐 Hash password before saving
+userSchema.pre("save", async function () { // Removed 'next' here
+  if (!this.isModified("password")) return; // Removed 'next()' call
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  // No need to call next() when using an async function
 });
 
 
