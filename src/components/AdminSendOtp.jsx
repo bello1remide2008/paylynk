@@ -15,7 +15,7 @@ const AdminSendOtp = () => {
     setStatus("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/send-otp", {
+      const res = await fetch("http://paylynk-1.onrender.com/api/admin/send-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
