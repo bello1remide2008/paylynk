@@ -22,7 +22,7 @@ const Verification = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://paylynk-1.onrender.com/api/auth/verify-otp", {
+      const res = await fetch("https://paylynk-1.onrender.com/api/auth/verify-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
