@@ -6,11 +6,15 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({});
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("adminToken");
 
+  setLoading(false);
   // 🔹 Fetch dashboard stats
   useEffect(() => {
+     if (!token) return;
+    
     const fetchStats = async () => {
       try {
         const res = await fetch("https://paylynk-1.onrender.com/api/admin/stats", {
@@ -37,7 +41,7 @@ const AdminDashboard = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/user-by-phone/${phone}`,
+        `https://paylynk-1.onrender.com/api/admin/user-by-phone/${phone}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,7 +82,7 @@ const AdminDashboard = () => {
 
           <button
             className="ml-2 p-3 bg-black text-white rounded"
-            onClick={() => navigate(`/admin/user/${phone}`)}
+            onClick={handleSearch}
           >
             Search
           </button>
@@ -87,9 +91,13 @@ const AdminDashboard = () => {
 
       {/* 📊 STATS */}
       <div className="flex justify-center gap-10 mt-10">
+         {loading ? (
+    <p>Loading...</p>
+  ) : (
         <div>Total Users: {stats.totalUsers}</div>
         <div>Total Accounts: {stats.totalAccounts}</div>
         <div>Total Transactions: {stats.totalTransactions}</div>
+  )}     
       </div>
 
       {/* 👤 RECENT USERS */}
