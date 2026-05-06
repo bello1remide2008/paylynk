@@ -9,6 +9,17 @@ const Verification = () => {
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(60);
+
+useEffect(() => {
+  if (timer > 0) {
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }
+}, [timer]);
 
   const verifyOtp = async () => {
     if (!otp) return alert("Enter OTP");
@@ -48,6 +59,23 @@ const Verification = () => {
 
     setLoading(false);
   };
+   const handleResend = async () => {
+  try {
+    await fetch("http://localhost:5000/api/auth/resend-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    alert("OTP sent again");
+    setTimer(60);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
@@ -85,12 +113,13 @@ const Verification = () => {
             {loading ? "Verifying..." : "Verify OTP"}
           </button>
 
-          <button
-            className="w-full bg-orange-500 hover:bg-orange-600 py-3 rounded-lg font-semibold transition"
-            onClick={() => navigate("/enter-bvn")}
-          >
-            Continue
-          </button>
+          
+          <button 
+          className="w-full mt-3 bg-gray-600 py-3 rounded-lg font-semibold"
+          onClick={handleResend} disabled={timer > 0}>
+  {timer > 0 ? `Resend in ${timer}s` : "Resend OTP"}
+</button>
+
 
           {/* Socials */}
           <div className="flex gap-4 mt-6">
