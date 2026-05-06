@@ -1,6 +1,8 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
+import cryto from "crypto";
+
 
 // ========================
 // REGISTER INIT (EMAIL OTP)
@@ -170,8 +172,9 @@ export const resendOtp = async (req, res) => {
     // Hash it (recommended)
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-    user.otp = hashedOtp;
-    user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 mins
+if (user.otp !== hashedOtp) {
+  return res.status(400).json({ message: "Invalid OTP" });
+} // 5 mins
 
     await user.save();
      await resend.emails.send({
