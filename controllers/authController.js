@@ -154,7 +154,7 @@ const token = generateToken(user._id);
   }
 };
 
-export const resendOTP = async (req, res) => {
+export const resendOtp = async (req, res) => {
   try {
     const { email } = req.body;
 
