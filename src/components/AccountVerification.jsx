@@ -40,23 +40,15 @@ const AccountVerification = () => {
 
       const data = await res.json();
 
-      if (data.success) {
-        // fetch accounts after verification
-        const accRes = await fetch("https//paylynk-1.onrender.com/api/bvn/accounts");
-        const accData = await accRes.json();
+    
+  if (data.success) {
+  alert("Verification successful!");
 
-        setAccounts(accData.accounts || []);
-        alert("Verification successful!");
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "Invalid OTP");
-      }
-    } catch (err) {
-      setError("Verification failed");
-    }
-
-    setLoading(false);
-  };
+  // skip BVN API for now
+  navigate("/dashboard");
+} else {
+  setError(data.message || "Invalid OTP");
+}
 
   // =========================
   // SELECT ACCOUNT
