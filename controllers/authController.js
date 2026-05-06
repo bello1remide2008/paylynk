@@ -53,7 +53,7 @@ export const registerInit = async (req, res, ) => {
 
     // send email OTP
     const sent = await sendEmail({
-      to: email,
+      to: user.email,
       subject: "Your PayLynk OTP Code",
       text: `Your OTP is ${otp}`,
       html: `
