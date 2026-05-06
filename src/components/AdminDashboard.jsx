@@ -7,7 +7,7 @@ const AdminDashboard = () => {
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // 🔹 Fetch dashboard stats
   useEffect(() => {
