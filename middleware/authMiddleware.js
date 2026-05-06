@@ -10,13 +10,22 @@ export const protect = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+      // 👇 only for users (role = user)
+      if (decoded.role !== "user") {
+        return res.status(403).json({ message: "User access only" });
+      }
+
       req.user = await User.findById(decoded.id).select("-password");
 
-      return next();
-    } catch (error) {
-      return res.status(401).json({ message: "Not authorized" });
-    }
-  }
+      if (!req.user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-  return res.status(401).json({ message: "No token" });
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Not authorized, token failed" });
+    }
+  } else {
+    return res.status(401).json({ message: "No token" });
+  }
 };
