@@ -24,6 +24,12 @@ useEffect(() => {
 
   const verifyOtp = async () => {
     setLoading(true);
+    const userId = localStorage.getItem("userId");
+
+if (!userId) {
+  alert("User session expired. Please register again.");
+  return;
+}
     try {
       const res = await fetch("https://paylynk-1.onrender.com/api/auth/verify-otp", {
         method: "POST",
