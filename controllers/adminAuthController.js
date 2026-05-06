@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-
 export const adminLogin = (req, res) => {
   const { username, password } = req.body;
 
@@ -15,8 +14,12 @@ export const adminLogin = (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
+  // ✅ include role inside token
   const token = jwt.sign(
-    { role: "admin" },
+    {
+      role: "admin",
+      id: "admin" // fixed identifier
+    },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );
@@ -24,5 +27,6 @@ export const adminLogin = (req, res) => {
   res.json({
     success: true,
     token,
+    role: "admin"
   });
 };
