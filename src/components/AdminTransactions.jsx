@@ -22,7 +22,7 @@ const [recent, setRecent] = useState([]);
     setLoading(true);
     setError("");
 const res = await fetch(
-      `http://localhost:5000/api/admin/user/${userId}`,
+      `https://paylynk-1.onrender.com/api/admin/user/${userId}`,
       {
         method: "GET",
         headers: {
@@ -86,7 +86,7 @@ const searchUser = async () => {
 
   // 🔹 Reverse Transaction
   const reverseTx = async (txId) => {
-    await fetch(`/api/admin/reverse/${txId}`, {
+    await fetch(`https://paylynk-1.onrender.com/api/admin/reverse/${txId}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -97,7 +97,7 @@ const searchUser = async () => {
 
   // 🔹 Delete Transaction
   const deleteTx = async (txId) => {
-    await fetch(`/api/admin/delete-tx/${txId}`, {
+    await fetch(`https://paylynk-1.onrender.com/api/admin/delete-tx/${txId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -108,7 +108,7 @@ const searchUser = async () => {
 
   // 🔹 Block User
   const blockUser = async () => {
-    await fetch(`/api/admin/block/${id}`, {
+    await fetch(, {`https://paylynk-1.onrender.com/api/admin/block/${id}`
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -118,7 +118,7 @@ const searchUser = async () => {
 
   // 🔹 Unblock User
   const unblockUser = async () => {
-    await fetch(`/api/admin/unblock/${id}`, {
+    await fetch(`https://paylynk-1.onrender.com/api/admin/unblock/${id}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -130,7 +130,7 @@ const searchUser = async () => {
   const creditUser = async () => {
     const amount = prompt("Enter amount to credit:");
 
-    await fetch(`/api/admin/credit`, {
+    await fetch(`https://paylynk-1.onrender.com/api/admin/credit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -146,7 +146,7 @@ const searchUser = async () => {
   const debitUser = async () => {
     const amount = prompt("Enter amount to debit:");
 
-    await fetch(`/api/admin/debit`, {
+    await fetch(`https://paylynk-1.onrender.com/api/admin/debit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -159,7 +159,7 @@ const searchUser = async () => {
   };
   // 🔹 Freeze Account
 const freezeAccount = async (accountId) => {
-  await fetch(`/api/admin/freeze/${accountId}`, {
+  await fetch(`https://paylynk-1.onrender.com/api/admin/freeze/${accountId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -172,7 +172,7 @@ const freezeAccount = async (accountId) => {
 
 // 🔹 Unfreeze Account
 const unfreezeAccount = async (accountId) => {
-  await fetch(`/api/admin/unfreeze/${accountId}`, {
+  await fetch(`https://paylynk-1.onrender.com/api/admin/unfreeze/${accountId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
