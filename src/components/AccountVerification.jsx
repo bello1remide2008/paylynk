@@ -49,6 +49,12 @@ const AccountVerification = () => {
 } else {
   setError(data.message || "Invalid OTP");
 }
+      } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false); // This stops the spinner/loading state
+    }
+  }; // <--- T
 
   // =========================
   // SELECT ACCOUNT
