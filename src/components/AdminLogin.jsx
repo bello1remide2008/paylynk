@@ -10,34 +10,34 @@ const AdminLogin = () => {
 
    const handleLogin = async () => {
   try {
-    const res = await fetch("http://paylynk-1.onrender.com/api/admin/auth/login", {
+    const res = await fetch("https://paylynk-backend.onrender.com/api/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ username, password }),
     });
 
     const data = await res.json();
-    localStorage.setItem("adminToken", data.token);
-
-    console.log("RESPONSE:", data);
 
     if (!res.ok) {
       throw new Error(data.message || "Request failed");
     }
 
+    localStorage.setItem("adminToken", data.token);
+
+    console.log("RESPONSE:", data);
+
     if (data.success) {
-      
       navigate("/admin/dashboard");
     }
 
   } catch (err) {
     console.error("LOGIN ERROR:", err.message);
-    alert(err.message); // 🔥 show real error
+    alert(err.message);
   }
 };
+
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
