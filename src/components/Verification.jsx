@@ -23,42 +23,26 @@ useEffect(() => {
 }, [timer]);
 
   const verifyOtp = async () => {
-    if (!otp) return alert("Enter OTP");
-
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-      return alert("User session expired. Please register again.");
-    }
-
+    setLoading(true);
     try {
-      setLoading(true);
-
       const res = await fetch("https://paylynk-1.onrender.com/api/auth/verify-otp", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          otp,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: localStorage.getItem("userId"), otp }),
       });
 
       const data = await res.json();
-
       if (data.success) {
-        alert("Verification successful!");
+        alert("Success!");
         navigate("/enter-bvn");
       } else {
-        alert(data.message || "Invalid OTP");
+        alert(data.message);
       }
     } catch (err) {
-      console.error(err);
-      alert("Verification failed. Try again.");
+      alert("Error connecting to server");
+    } finally {
+      setLoading(false); // This makes sure the button stops "loading"
     }
-
-    setLoading(false);
   };
    const handleResend = async () => {
   try {
