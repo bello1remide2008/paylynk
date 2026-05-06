@@ -10,7 +10,7 @@ const AdminLogin = () => {
 
    const handleLogin = async () => {
   try {
-    const res = await fetch("https://paylynk-backend.onrender.com/api/admin/auth/login", {
+    const res = await fetch("https://paylynk-1.onrender.com/api/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
