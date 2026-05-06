@@ -143,7 +143,7 @@ export const loginUser = async (req, res) => {
     if (!user.isVerified) {
       return res.status(403).json({ message: "Verify your account first" });
     }
-
+const token = generateToken(user._id);
     res.json({
       success: true,
       token: generateToken(user._id),
