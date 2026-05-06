@@ -1,52 +1,20 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+import { Resend } from "resend";
 
-// Load environment variables
-dotenv.config();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// ✅ Create transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use SSL
-  family: 4,
-auth: {
-  user: process.env.EMAIL_USER,
-  pass: process.env.EMAIL_PASS,
-},
-  tls: {
-    // This fixes the "self-signed certificate in certificate chain" error
-    rejectUnauthorized: false,
-  },
-});
-
-// ✅ Verify connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("Transporter error: Check if EMAIL_USER and EMAIL_PASS are correct in .env");
-    console.error("Error details:", error.message);
-  } else {
-    console.log("Email server is ready to send messages");
-  }
-});
-
-// ✅ Send Email Function
-export const sendEmail = async ({ to, subject, text, html }) => {
+export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const mailOptions = {
-      from: `"PAYLYNK App" <${process.env.EMAIL_USER}>`,
-      to,          // ✅ dynamic
-      subject,     // ✅ dynamic
-      text,
+    const response = await resend.emails.send({
+      from: "Paylynk <onboarding@resend.dev>",
+      to,
+      subject,
       html,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
+    console.log("EMAIL SENT:", response);
     return true;
-
   } catch (error) {
-    console.error("Email send error:", error.message);
+    console.error("RESEND ERROR:", error);
     return false;
   }
 };
