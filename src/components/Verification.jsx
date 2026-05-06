@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import phone from "./phone.png";
@@ -10,6 +10,7 @@ const Verification = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
+  const email = localStorage.getItem("email");
 
 useEffect(() => {
   if (timer > 0) {
@@ -61,7 +62,7 @@ useEffect(() => {
   };
    const handleResend = async () => {
   try {
-    await fetch("http://localhost:5000/api/auth/resend-otp", {
+    await fetch("https://paylynk-1.onrender.com/api/auth/resend-otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
