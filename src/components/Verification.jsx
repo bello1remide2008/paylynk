@@ -30,6 +30,8 @@ if (!userId) {
   alert("User session expired. Please register again.");
   return;
 }
+    console.log("userId:", userId);
+console.log("otp:", otp);
     try {
       const res = await fetch("https://paylynk-1.onrender.com/api/auth/verify-otp", {
         method: "POST",
