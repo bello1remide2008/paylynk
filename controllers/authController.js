@@ -153,3 +153,41 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate new OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Hash it (recommended)
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+    user.otp = hashedOtp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 mins
+
+    await user.save();
+     await resend.emails.send({
+      from: "onboarding@resend.dev", // change later
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h2>Your OTP is: ${otp}</h2>`
+      });
+
+    // Send OTP again (email or SMS)
+    console.log("New OTP:", otp); // for testing
+
+    return res.json({ message: "OTP resent successfully" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error resending OTP" });
+  }
+};
