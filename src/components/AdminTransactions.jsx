@@ -9,7 +9,7 @@ const [recent, setRecent] = useState([]);
   const { id } = useParams();
   const [data, setData] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const fetchProfile = async (userId = id) => {
   if (!userId) {
