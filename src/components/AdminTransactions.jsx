@@ -108,7 +108,7 @@ const searchUser = async () => {
 
   // 🔹 Block User
   const blockUser = async () => {
-    await fetch(, {`https://paylynk-1.onrender.com/api/admin/block/${id}`
+    await fetch( `https://paylynk-1.onrender.com/api/admin/block/${id}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     });
