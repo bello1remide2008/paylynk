@@ -3,6 +3,7 @@ import {
   registerInit,
   loginUser,
   verifyOtp,
+  resendOTP,
 } from "../controllers/authController.js";
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.post("/login", loginUser);
 
 // Verify OTP (email-based)
 router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOTP);
 
 export default router;
