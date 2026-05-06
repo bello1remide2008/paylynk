@@ -175,7 +175,7 @@ export const resendOtp = async (req, res) => {
 
     await user.save();
      await resend.emails.send({
-      from: "onboarding@resend.dev", // change later
+      from: "Paylynk <hello@paylynkds.com>", // change later
       to: email,
       subject: "Your OTP Code",
       html: `<h2>Your OTP is: ${otp}</h2>`
