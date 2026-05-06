@@ -27,7 +27,7 @@ const AccountVerification = () => {
     setError("");
 
     try {
-      const res = await fetch("http://paylynk-1.onrender.com/api/auth/verify-otp", {
+      const res = await fetch("https://paylynk-1.onrender.com/api/auth/verify-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,7 +42,7 @@ const AccountVerification = () => {
 
       if (data.success) {
         // fetch accounts after verification
-        const accRes = await fetch("/api/bvn/accounts");
+        const accRes = await fetch("https//paylynk-1.onrender.com/api/bvn/accounts");
         const accData = await accRes.json();
 
         setAccounts(accData.accounts || []);
