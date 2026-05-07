@@ -1,6 +1,7 @@
 import Transaction from "../models/Transaction.js";
 import Account from "../models/Account.js";
 import { sendEmail } from "../services/emailService.js";
+import User from "../models/User.js";
 
 
 
@@ -15,26 +16,31 @@ export const sendMoney = async (req, res) => {
       receiverName,
     } = req.body;
 
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
     const account = await Account.findById(accountId);
 
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
+    // ✅ freeze check FIXED
+    if (account.isFrozen) {
+      return res.status(403).json({
+        message: "Account is frozen. Transactions not allowed.",
+      });
+    }
+
     if (account.balance < amount) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
-    if (senderAccount.isFrozen) {
-  return res.status(403).json({
-    message: "Account is frozen. Transactions not allowed.",
-  });
-}
 
     // deduct balance
     account.balance -= amount;
     await account.save();
 
-    // create transaction
     const transaction = await Transaction.create({
       userId: req.user._id,
       accountId,
@@ -48,19 +54,14 @@ export const sendMoney = async (req, res) => {
       reference: "TXN-" + Date.now(),
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       transaction,
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
-await sendEmail({
-  to: req.user.email,
-  subject: "Bank Connected",
-  text: `Your ${bankName} account has been successfully linked.`,
-});
 };
 // ✅ GET TRANSACTIONS (PER ACCOUNT)
 export const getTransactions = async (req, res) => {
@@ -82,7 +83,16 @@ export const getTransactions = async (req, res) => {
 };
 export const receiveMoney = async (req, res) => {
   try {
-    const { accountId, amount, senderAccountNumber, senderBankName } = req.body;
+    const {
+      accountId,
+      amount,
+      senderAccountNumber,
+      senderBankName,
+    } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
 
     const account = await Account.findById(accountId);
 
@@ -90,7 +100,6 @@ export const receiveMoney = async (req, res) => {
       return res.status(404).json({ message: "Account not found" });
     }
 
-    // 🔺 credit
     account.balance += amount;
     await account.save();
 
@@ -100,21 +109,21 @@ export const receiveMoney = async (req, res) => {
       type: "credit",
       amount,
       description: "Transfer In",
-
       senderAccountNumber,
       senderBankName,
-
       receiverAccountNumber: account.accountNumber,
       receiverBankName: account.bankName,
     });
 
     const user = await User.findById(account.userId);
 
-    await sendEmail({
-      to: user.email,
-      subject: "Credit Alert 💰",
-      text: `You received ₦${amount} into ${account.bankName} (${account.accountNumber})`,
-    });
+    if (user) {
+      await sendEmail({
+        to: user.email,
+        subject: "Credit Alert 💰",
+        text: `You received ₦${amount} into ${account.bankName} (${account.accountNumber})`,
+      });
+    }
 
     res.json({ success: true, tx });
 
