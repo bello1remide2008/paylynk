@@ -41,11 +41,16 @@ console.log("otp:", otp);
 
       const data = await res.json();
       if (data.success) {
-        alert("Success!");
-        navigate("/enter-bvn");
-      } else {
-        alert(data.message);
-      }
+
+  localStorage.setItem("token", data.token);
+
+  alert("Verification successful!");
+
+  navigate("/enter-bvn");
+
+} else {
+  alert(data.message);
+}
     } catch (err) {
       alert("Error connecting to server");
     } finally {
