@@ -10,7 +10,7 @@ const Verification = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-  const email = localStorage.getItem("email");
+  const email = localStorage.getItem("tempEmail");
 
 useEffect(() => {
   if (timer > 0) {
@@ -43,6 +43,9 @@ console.log("otp:", otp);
       if (data.success) {
 
   localStorage.setItem("token", data.token);
+         localStorage.removeItem("tempEmail");
+  localStorage.removeItem("tempPhone");
+
 
   alert("Verification successful!");
 
