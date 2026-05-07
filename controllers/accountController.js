@@ -108,17 +108,15 @@ export const setDefaultAccount = async (req, res) => {
     );
 
     // set new default
-    const account = await Account.findByIdAndUpdate(
-      accountId,
-      { isDefault: true },
-      { new: true }
-    );
-
-    res.json({
-      success: true,
-      account,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const account = await Account.findOneAndUpdate(
+  {
+    _id: accountId,
+    userId: req.user._id,
+  },
+  {
+    isDefault: true,
+  },
+  {
+    new: true,
   }
-};
+);
