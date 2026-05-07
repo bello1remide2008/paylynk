@@ -63,7 +63,7 @@ const searchUser = async () => {
 
   try {
     const res = await fetch(
-      `/api/admin/search-user?query=${search}`,
+      `https://paylynk-1.onrender.com/api/admin/search-user?query=${search}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
