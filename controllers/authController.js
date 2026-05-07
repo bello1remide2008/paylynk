@@ -192,7 +192,7 @@ export const resendOtp = async (req, res) => {
 
     // 🔥 Send email
     const sent = await sendEmail({
-      to: email,
+      to: user.email,
       subject: "Your PayLynk OTP Code",
       text: `Your OTP is ${otp}`,
       html: `
