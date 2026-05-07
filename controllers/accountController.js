@@ -58,6 +58,14 @@ export const connectAccount = async (req, res) => {
   try {
     const { bankName, accountNumber, accountName } = req.body;
 
+    // ✅ validate fields
+    if (!bankName || !accountNumber || !accountName) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    // ✅ create account
     const account = await Account.create({
       userId: req.user._id,
       bankName,
@@ -66,19 +74,41 @@ export const connectAccount = async (req, res) => {
       balance: 0,
     });
 
+    // ✅ send email after successful account creation
+    await sendEmail({
+      to: req.user.email,
+      subject: "Bank Connected",
+      text: `Your ${bankName} account has been successfully linked.`,
+      html: `
+        <div style="font-family: Arial;">
+          <h2>Bank Connected Successfully</h2>
+          <p>Your bank account has been linked.</p>
+
+          <ul>
+            <li><strong>Bank:</strong> ${bankName}</li>
+            <li><strong>Account Number:</strong> ${accountNumber}</li>
+            <li><strong>Account Name:</strong> ${accountName}</li>
+          </ul>
+
+          <p>Thank you for using PayLynk.</p>
+        </div>
+      `,
+    });
+
+    // ✅ response
     res.status(201).json({
       success: true,
+      message: "Account connected successfully",
       account,
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 
-await sendEmail({
-  to: req.user.email,
-  subject: "Bank Connected",
-  text: `Your ${bankName} account has been successfully linked.`,
-});
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 // ✅ GET USER ACCOUNTS
