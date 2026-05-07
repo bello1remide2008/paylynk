@@ -21,7 +21,7 @@ export const registerInit = async (req, res, ) => {
     const existing = await User.findOne({
   $or: [
     { phone },
-    { const user = await User.findOne({ email: email.toLowerCase() }); }
+    {  email: email.toLowerCase()}
   ],
 });
 
@@ -96,30 +96,51 @@ export const verifyOtp = async (req, res) => {
   try {
     const { userId, otp } = req.body;
 
+    console.log("VERIFY BODY:", req.body);
+
     if (!userId || !otp) {
-      return res.status(400).json({ message: "Missing fields" });
+      return res.status(400).json({
+        message: "Missing fields",
+      });
     }
 
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
-   if (!user.otp || !user.otpExpires) {
-  return res.status(400).json({ message: "OTP not found, request new one" });
-}
+    console.log("DB OTP:", user.otp);
+    console.log("ENTERED OTP:", otp);
 
-if (user.otpExpires < Date.now()) {
-  return res.status(400).json({ message: "OTP expired" });
-}
+    // OTP missing
+    if (!user.otp || !user.otpExpires) {
+      return res.status(400).json({
+        message: "OTP not found, request new one",
+      });
+    }
 
-if (!user.otpExpires || user.otpExpires < Date.now()){
-  return res.status(400).json({ message: "Invalid OTP" });
-}
+    // OTP expired
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({
+        message: "OTP expired",
+      });
+    }
+
+    // OTP incorrect
+    if (String(user.otp) !== String(otp)) {
+      return res.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+
+    // verify user
     user.isVerified = true;
     user.otp = null;
     user.otpExpires = null;
+
     await user.save();
 
     res.json({
@@ -127,8 +148,13 @@ if (!user.otpExpires || user.otpExpires < Date.now()){
       message: "Account verified",
       token: generateToken(user._id),
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("VERIFY ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
