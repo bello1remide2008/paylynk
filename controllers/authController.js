@@ -114,7 +114,7 @@ if (user.otpExpires < Date.now()) {
   return res.status(400).json({ message: "OTP expired" });
 }
 
-if (String(user.otp) !== String(otp)) {
+if (!user.otpExpires || user.otpExpires < Date.now()){
   return res.status(400).json({ message: "Invalid OTP" });
 }
     user.isVerified = true;
@@ -169,7 +169,7 @@ export const resendOtp = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return res.status(404).json({
