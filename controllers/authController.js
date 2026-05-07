@@ -44,7 +44,7 @@ export const registerInit = async (req, res, ) => {
     });
 
     // generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     console.log("🔥 OTP GENERATED:", otp);
 
