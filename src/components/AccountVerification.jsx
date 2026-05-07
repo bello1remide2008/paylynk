@@ -42,10 +42,11 @@ const AccountVerification = () => {
 
     
   if (data.success) {
+  localStorage.setItem("token", data.token);
+
   alert("Verification successful!");
 
-  // skip BVN API for now
-  navigate("/dashboard");
+   setStep(2);
 } else {
   setError(data.message || "Invalid OTP");
 }
@@ -97,6 +98,7 @@ const AccountVerification = () => {
           {/* OTP INPUT */}
           <input
             type="text"
+            inputMode="numeric"
             maxLength="6"
             placeholder="Enter OTP"
             value={otp}
@@ -242,7 +244,7 @@ const AccountVerification = () => {
           </div>
 
           <img
-            src="/phone.png"
+            src={phone}
             alt="App preview"
             className="w-full"
           />
