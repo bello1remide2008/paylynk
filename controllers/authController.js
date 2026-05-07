@@ -106,14 +106,17 @@ export const verifyOtp = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (String(user.otp) !== String(otp)) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
+   if (!user.otp || !user.otpExpires) {
+  return res.status(400).json({ message: "OTP not found, request new one" });
+}
 
-    if (user.otpExpires < Date.now()) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
+if (user.otpExpires < Date.now()) {
+  return res.status(400).json({ message: "OTP expired" });
+}
 
+if (String(user.otp) !== String(otp)) {
+  return res.status(400).json({ message: "Invalid OTP" });
+}
     user.isVerified = true;
     user.otp = null;
     user.otpExpires = null;
