@@ -10,30 +10,45 @@ const AdminDashboard = () => {
 
   const token = localStorage.getItem("adminToken");
 
-  setLoading(false);
+  
   // 🔹 Fetch dashboard stats
   useEffect(() => {
-     if (!token) return;
-    
-    const fetchStats = async () => {
-      try {
-        const res = await fetch("https://paylynk-1.onrender.com/api/admin/stats", {
+  if (!token) {
+    navigate("/admin/login");
+    return;
+  }
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(
+        "https://paylynk-1.onrender.com/api/admin/stats",
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        }
+      );
 
-        const data = await res.json();
-        setStats(data);
-      } 
-
-      catch (error) {
-        console.error(error);
+      // 🔥 If token invalid
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("adminToken");
+        navigate("/admin/login");
+        return;
       }
-    };
 
-    fetchStats();
-  }, []);
+      const data = await res.json();
+      setStats(data);
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStats();
+
+}, [token, navigate]);
 
   // 🔹 Search user by phone
   const handleSearch = async () => {
@@ -91,14 +106,16 @@ const AdminDashboard = () => {
 
       {/* 📊 STATS */}
       <div className="flex justify-center gap-10 mt-10">
-         {loading ? (
+  {loading ? (
     <p>Loading...</p>
   ) : (
-        <div>Total Users: {stats.totalUsers}</div>
-        <div>Total Accounts: {stats.totalAccounts}</div>
-        <div>Total Transactions: {stats.totalTransactions}</div>
-  )}     
-      </div>
+    <>
+      <div>Total Users: {stats.totalUsers}</div>
+      <div>Total Accounts: {stats.totalAccounts}</div>
+      <div>Total Transactions: {stats.totalTransactions}</div>
+    </>
+  )}
+</div>
 
       {/* 👤 RECENT USERS */}
       <div className="mt-10 p-4">
