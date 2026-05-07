@@ -3,6 +3,7 @@ import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 import { sendEmail } from "../services/emailService.js";
 
+// ✅ SEND MONEY
 export const sendMoney = async (req, res) => {
   try {
     const { amount, senderAccountId, receiverAccountNumber, receiverBankName } = req.body;
@@ -28,10 +29,8 @@ export const sendMoney = async (req, res) => {
       type: "debit",
       amount,
       description: "Transfer Out",
-
       senderAccountNumber: senderAccount.accountNumber,
       senderBankName: senderAccount.bankName,
-
       receiverAccountNumber,
       receiverBankName,
     });
@@ -51,7 +50,6 @@ export const sendMoney = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // ✅ CONNECT BANK ACCOUNT 
 export const connectAccount = async (req, res) => {
@@ -83,13 +81,11 @@ export const connectAccount = async (req, res) => {
         <div style="font-family: Arial;">
           <h2>Bank Connected Successfully</h2>
           <p>Your bank account has been linked.</p>
-
           <ul>
             <li><strong>Bank:</strong> ${bankName}</li>
             <li><strong>Account Number:</strong> ${accountNumber}</li>
             <li><strong>Account Name:</strong> ${accountName}</li>
           </ul>
-
           <p>Thank you for using PayLynk.</p>
         </div>
       `,
@@ -104,7 +100,6 @@ export const connectAccount = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: error.message,
     });
@@ -125,8 +120,6 @@ export const getAccounts = async (req, res) => {
   }
 };
 
-
-// ✅ SET DEFAULT ACCOUNT
 // ✅ SET DEFAULT ACCOUNT
 export const setDefaultAccount = async (req, res) => {
   try {
@@ -162,4 +155,3 @@ export const setDefaultAccount = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-);
