@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
-import cryto from "crypto";
+import crypto from "crypto";
 
 
 // ========================
@@ -160,37 +160,66 @@ export const resendOtp = async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
-    // Generate new OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // 🔥 Generate new OTP
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
-    // Hash it (recommended)
-    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+    // 🔥 Save OTP directly
+    user.otp = otp;
 
-if (user.otp !== hashedOtp) {
-  return res.status(400).json({ message: "Invalid OTP" });
-} // 5 mins
+    user.otpExpires =
+      Date.now() + 5 * 60 * 1000;
 
     await user.save();
-     await resend.emails.send({
-      from: "Paylynk <hello@paylynkds.com>", // change later
+
+    // 🔥 Send email
+    const sent = await sendEmail({
       to: email,
-      subject: "Your OTP Code",
-      html: `<h2>Your OTP is: ${otp}</h2>`
+      subject: "Your PayLynk OTP Code",
+      text: `Your OTP is ${otp}`,
+      html: `
+        <div style="font-family: Arial;">
+          <h2>PayLynk Verification</h2>
+          <p>Your new OTP is:</p>
+          <h1>${otp}</h1>
+          <p>This code expires in 5 minutes.</p>
+        </div>
+      `,
+    });
+
+    if (!sent) {
+      return res.status(500).json({
+        message: "Failed to send OTP",
       });
+    }
 
-    // Send OTP again (email or SMS)
-    console.log("New OTP:", otp); // for testing
+    console.log("NEW OTP:", otp);
 
-    return res.json({ message: "OTP resent successfully" });
+    res.json({
+      success: true,
+      message: "OTP resent successfully",
+    });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error resending OTP" });
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
