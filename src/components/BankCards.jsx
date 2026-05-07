@@ -13,34 +13,64 @@ const BankCards = () => {
   const [filteredBanks, setFilteredBanks] = useState([]);
 
   // ✅ BANK LIST (for search)
-  const bankList = [
-    "Access Bank",
-    "GTBank",
-    "First Bank",
-    "UBA",
-    "Zenith Bank",
-    "Wema Bank",
-    "Opay",
-    "PalmPay",
-    "Kuda Bank",
-  ];
+const bankList = [
+  "Access Bank",
+  "Citibank Nigeria",
+  "Ecobank Nigeria",
+  "Fidelity Bank",
+  "First Bank of Nigeria",
+  "First City Monument Bank (FCMB)",
+  "Globus Bank",
+  "Guaranty Trust Bank (GTBank)",
+  "Heritage Bank",
+  "Jaiz Bank",
+  "Keystone Bank",
+  "Kuda Bank",
+  "Moniepoint MFB",
+  "Opay",
+  "PalmPay",
+  "Parallex Bank",
+  "Polaris Bank",
+  "PremiumTrust Bank",
+  "Providus Bank",
+  "Stanbic IBTC Bank",
+  "Standard Chartered Bank",
+  "Sterling Bank",
+  "SunTrust Bank",
+  "TAJ Bank",
+  "Titan Trust Bank",
+  "Union Bank",
+  "United Bank for Africa (UBA)",
+  "Unity Bank",
+  "Wema Bank",
+  "Zenith Bank",
 
-  const [banks, setBanks] = useState([
-    {
-      id: 1,
-      bankName: "Access Bank",
-      accountName: "Isaac Alfred",
-      accountNo: "0723456789",
-      isHardcoded: true,
-    },
-    {
-      id: 2,
-      bankName: "Wema Bank",
-      accountName: "Isaac Alfred",
-      accountNo: "8234567123",
-      isHardcoded: true,
-    },
-  ]);
+  // Microfinance / fintech popular ones
+  "ALAT by Wema",
+  "Carbon",
+  "FairMoney",
+  "Rubies MFB",
+  "Sparkle",
+  "VFD Microfinance Bank",
+
+  // Digital wallets
+  "Chipper Cash",
+  "Paga"
+];
+
+ const [banks, setBanks] = useState(() => {
+  return (
+    JSON.parse(localStorage.getItem("epay_accounts")) || [
+      {
+        id: 1,
+        bankName: "Access Bank",
+        accountName: "Isaac Alfred",
+        accountNo: "0723456789",
+        isHardcoded: true,
+      },
+    ]
+  );
+});
 
   const [cards, setCards] = useState([
     {
@@ -96,50 +126,62 @@ const BankCards = () => {
   };
 
   // ================= BANK =================
-  const handleLinkBank = (e) => {
    const handleLinkBank = (e) => {
   e.preventDefault();
 
   const newAccount = {
     id: Date.now(),
     bankName: newBank.bankName,
-    accountNumber: newBank.accountNo,
+    accountNo: newBank.accountNo,
     accountName: newBank.accountName,
-    balance: Math.floor(Math.random() * 500000), // fake balance
-    isDefault: false
+    balance: Math.floor(Math.random() * 500000),
+    isDefault: false,
   };
 
+  // existing accounts
   const existing =
     JSON.parse(localStorage.getItem("epay_accounts")) || [];
 
+  // updated accounts
   const updatedAccounts = [...existing, newAccount];
 
-  localStorage.setItem("epay_accounts", JSON.stringify(updatedAccounts));
+  // save to localStorage
+  localStorage.setItem(
+    "epay_accounts",
+    JSON.stringify(updatedAccounts)
+  );
 
-  setBanks([...banks, newAccount]);
+  // update UI
+  setBanks(updatedAccounts);
 
+  // close modal
   setShowBankModal(false);
+
+  // clear search
+  setFilteredBanks([]);
+
+  // reset form
+  setNewBank({
+    bankName: "",
+    accountNo: "",
+    accountName: "",
+  });
+
+  alert("Bank linked successfully!");
+}; 
+
+  const handleUnlinkBank = (accountNumber) => {
+  const updated = banks.filter(
+    (b) => b.accountNumber !== accountNumber
+  );
+
+  setBanks(updated);
+
+  localStorage.setItem(
+    "epay_accounts",
+    JSON.stringify(updated)
+  );
 };
-    e.preventDefault();
-
-    setBanks([
-      ...banks,
-      { ...newBank, id: Date.now(), isHardcoded: false },
-    ]);
-
-    setShowBankModal(false);
-    setFilteredBanks([]);
-
-    setNewBank({
-      bankName: "",
-      accountNo: "",
-      accountName: "",
-    });
-  };
-
-  const handleUnlinkBank = (accountNo) => {
-    setBanks(banks.filter((b) => b.accountNo !== accountNo));
-  };
 
   // ================= CARD =================
   const handleAddCard = (e) => {
