@@ -21,7 +21,7 @@ export const registerInit = async (req, res, ) => {
     const existing = await User.findOne({
   $or: [
     { phone },
-    { email: email.toLowerCase() }
+    { const user = await User.findOne({ email: email.toLowerCase() }); }
   ],
 });
 
