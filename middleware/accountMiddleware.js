@@ -1,13 +1,38 @@
 import Account from "../models/Account.js";
 
-export const checkAccountOwnership = async (req, res, next) => {
-  const { accountId } = req.body;
+export const checkAccountOwnership = async (
+  req,
+  res,
+  next
+) => {
+  try {
 
-  const account = await Account.findById(accountId);
+    const { senderAccountId } = req.body;
 
-  if (!account || account.userId.toString() !== req.user._id.toString()) {
-    return res.status(403).json({ message: "Unauthorized account access" });
+    const account = await Account.findById(
+      senderAccountId
+    );
+
+    if (!account) {
+      return res.status(404).json({
+        message: "Account not found",
+      });
+    }
+
+    if (
+      account.userId.toString() !==
+      req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "Unauthorized account access",
+      });
+    }
+
+    next();
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
-
-  next();
 };
