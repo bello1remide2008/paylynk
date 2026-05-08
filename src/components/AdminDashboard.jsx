@@ -13,30 +13,39 @@ const AdminDashboard = () => {
   
   // 🔹 Fetch dashboard stats
   useEffect(() => {
-  if (!token) {
+  const adminToken = localStorage.getItem("adminToken");
+
+  // 🔥 if no token go login
+  if (!adminToken) {
     navigate("/admin/login");
     return;
   }
 
   const fetchStats = async () => {
     try {
+      setLoading(true);
+
       const res = await fetch(
         "https://paylynk-1.onrender.com/api/admin/stats",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${adminToken}`,
           },
         }
       );
 
-      // 🔥 If token invalid
-      if (res.status === 401 || res.status === 403) {
+      const data = await res.json();
+
+      // 🔥 ONLY redirect if token truly invalid
+      if (
+        data.message === "Invalid token" ||
+        data.message === "No token"
+      ) {
         localStorage.removeItem("adminToken");
         navigate("/admin/login");
         return;
       }
 
-      const data = await res.json();
       setStats(data);
 
     } catch (error) {
@@ -48,6 +57,7 @@ const AdminDashboard = () => {
 
   fetchStats();
 
+}, []);
 }, [token, navigate]);
 
   // 🔹 Search user by phone
