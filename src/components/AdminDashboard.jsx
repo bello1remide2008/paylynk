@@ -42,7 +42,7 @@ const AdminDashboard = () => {
         data.message === "No token"
       ) {
         localStorage.removeItem("adminToken");
-        navigate("/admin/login");
+        navigate("/admin-login");
         return;
       }
 
