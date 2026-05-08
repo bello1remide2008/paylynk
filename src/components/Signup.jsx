@@ -181,7 +181,7 @@ const handleContinue = async (e) => {
           </div>
 
           <div className="text-center border-t border-white/20 mt-10 pt-4 text-[0.9rem] text-[#cfd9e6]">
-            <p>© {new Date().getFullYear()} E-Pay — All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Paylynk — All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@ const handleContinue = async (e) => {
 
           <p className="text-gray-600 mb-6">
             Join over 500,000 users who have transformed their financial lives
-            with E-Pay. Download the app today and experience banking
+            with Paylynk. Download the app today and experience banking
             reimagined.
           </p>
 
