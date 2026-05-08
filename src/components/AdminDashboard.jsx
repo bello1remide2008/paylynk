@@ -17,7 +17,7 @@ const AdminDashboard = () => {
 
   // 🔥 if no token go login
   if (!adminToken) {
-    navigate("/admin/login");
+    navigate("/admin-login");
     return;
   }
 
