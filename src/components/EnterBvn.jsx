@@ -45,7 +45,7 @@ const EnterBVN = () => {
 
           {/* Footer */}
           <div className="border-t border-white/20 mt-10 pt-4 text-sm text-gray-400">
-            © {new Date().getFullYear()} E-Pay — All rights reserved.
+            © {new Date().getFullYear()} paylynk — All rights reserved.
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@ const EnterBVN = () => {
 
           <p className="text-gray-600 mb-6">
             Join over 500,000 users who have transformed their financial lives
-            with E-Pay. Download the app today and experience banking reimagined.
+            with Paylynk. Download the app today and experience banking reimagined.
           </p>
 
           {/* Download Buttons */}
