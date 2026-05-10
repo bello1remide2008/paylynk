@@ -213,27 +213,46 @@ export const getUserByPhone = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export const sendMailToUsers =  async (req, res) => {
-  const { userId, message } = req.body;
+export const sendMailToUsers = async (req, res) => {
+  try {
+    const { userId, message } = req.body;
 
-  const user = await User.findById(userId);
+    const user = await User.findById(userId);
 
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const success = await sendEmail({
+      to: user.email,
+      subject: "Message from Paylynk Admin",
+      text: message,
+      html: `
+        <div style="font-family: Arial; padding:20px;">
+          <h2>Paylynk Notification</h2>
+          <p>${message}</p>
+        </div>
+      `,
+    });
+
+    if (!success) {
+      return res.status(500).json({
+        message: "Email failed",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Mail sent successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
-
-  const success = await sendEmail({
-    to: user.email, // 🔥 IMPORTANT
-    subject: "Message from Paylynk Admin",
-    text: message,
-    html: `<p>${message}</p>`,
-  });
-
-  if (!success) {
-    return res.status(500).json({ message: "Email failed" });
-  }
-
-  res.json({ success: true });
 };
 
 export const freezeAccount = async (req, res) => {
