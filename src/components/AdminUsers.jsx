@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +10,7 @@ const AdminUsers = () => {
 
   const token = localStorage.getItem("adminToken");
 
+  // 🔥 FETCH USERS
   const fetchUsers = async () => {
     try {
       const res = await fetch(
@@ -20,7 +23,9 @@ const AdminUsers = () => {
       );
 
       const data = await res.json();
+
       setUsers(data.users || []);
+
     } catch (err) {
       console.error(err);
     }
@@ -32,112 +37,144 @@ const AdminUsers = () => {
 
   // 🔥 SEND MAIL
   const sendMail = async (userId) => {
-    const message = prompt("Enter message:");
+    const message = prompt("Enter message");
 
     if (!message) return;
 
-    await fetch("https://paylynk-1.onrender.com/api/admin/send-mail-to-users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ userId, message }),
-    });
+    try {
+      const res = await fetch(
+        `https://paylynk-1.onrender.com/api/admin/send-mail/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            message,
+          }),
+        }
+      );
 
-    alert("Mail sent");
-    await fetch("https://paylynk-1.onrender.com/api/admin/bulk-email", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-  body: JSON.stringify({
-    message: "Hello users, welcome to Paylynk!",
-  }),
-});
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Mail sent successfully");
+      } else {
+        alert(data.message);
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send mail");
+    }
   };
-
-  // 🔥 SEND OTP
-  const sendOtp = async (userId) => {
-    await fetch("https://paylynk-1.onrender.com/api/admin/send-otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ userId }),
-    });
-
-    alert("OTP sent");
-  };
-  
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Users</h2>
+    <div className="min-h-screen bg-gray-100 p-6">
 
-    <input
-  placeholder="Search email or phone"
-  className="border p-2 w-full"
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      searchUser();
-    }
-  }}
-/>
+      {/* HEADER */}
+      <div className="bg-white p-5 rounded-xl shadow mb-6">
+        <h2 className="text-2xl font-bold mb-4">
+          All Users
+        </h2>
 
-      {/* TABLE */}
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-black text-white">
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+        {/* SEARCH */}
+        <input
+          placeholder="Search by name, email or phone"
+          className="border p-3 rounded-lg w-full outline-none"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id} className="border">
-              <td>{user.name}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.phone}</td>
+      {/* USERS */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-              <td className="flex gap-2">
-                {/* VIEW PROFILE */}
-                <button
-                  onClick={() => navigate(`/admin/user/${user._id}`)}
-                  className="bg-black text-white px-2 py-1 rounded"
+        {users.map((user) => (
+          <div
+            key={user._id}
+            className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition"
+          >
+            {/* PROFILE */}
+            <div
+              onClick={() => navigate(`/admin/user/${user._id}`)}
+              className="cursor-pointer"
+            >
+              <div className="flex items-center gap-4">
+
+                <img
+                  src={
+                    user.profileImage ||
+                    "https://via.placeholder.com/150"
+                  }
+                  alt="profile"
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+
+                <div>
+                  <h3 className="font-bold text-lg">
+                    {user.name}
+                  </h3>
+
+                  <p className="text-gray-500 text-sm">
+                    {user.email}
+                  </p>
+
+                  <p className="text-gray-500 text-sm">
+                    {user.phone}
+                  </p>
+                </div>
+              </div>
+
+              {/* STATUS */}
+              <div className="mt-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                    user.isBlocked
+                      ? "bg-red-100 text-red-600"
+                      : "bg-green-100 text-green-600"
+                  }`}
                 >
-                  Profile
-                </button>
+                  {user.isBlocked ? "Blocked" : "Active"}
+                </span>
+              </div>
+            </div>
 
-                {/* SEND MAIL */}
-                <button
-                  onClick={() => sendMail(user._id)}
-                  className="bg-blue-600 text-white px-2 py-1 rounded"
-                >
-                  Mail
-                </button>
+            {/* ACTIONS */}
+            <div className="flex gap-2 mt-5">
 
-                {/* SEND OTP */}
-                <button
-                  onClick={() => sendOtp(user._id)}
-                  className="bg-green-600 text-white px-2 py-1 rounded"
-                >
-                  OTP
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              <button
+                onClick={() =>
+                  navigate(`/admin/user/${user._id}`)
+                }
+                className="flex-1 bg-black text-white py-2 rounded-lg"
+              >
+                View Profile
+              </button>
+
+              <button
+                onClick={() => sendMail(user._id)}
+                className="flex-1 bg-blue-600 text-white py-2 rounded-lg"
+              >
+                Send Mail
+              </button>
+
+            </div>
+          </div>
+        ))}
+
+      </div>
+
+      {/* EMPTY */}
+      {users.length === 0 && (
+        <div className="bg-white p-10 rounded-xl text-center mt-6">
+          <p className="text-gray-500">
+            No users found
+          </p>
+        </div>
+      )}
+
     </div>
   );
 };
