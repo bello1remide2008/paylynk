@@ -77,12 +77,17 @@ const AdminUsers = () => {
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Users</h2>
 
-      <input
-        className="border p-2 w-full mb-4"
-        placeholder="Search by username, email, phone..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+    <input
+  placeholder="Search email or phone"
+  className="border p-2 w-full"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      searchUser();
+    }
+  }}
+/>
 
       {/* TABLE */}
       <table className="w-full border">
