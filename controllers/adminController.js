@@ -59,9 +59,15 @@ export const getAdminStats = async (req, res) => {
     const totalAccounts = await Account.countDocuments();
     const totalTransactions = await Transaction.countDocuments();
 
-    const recentUsers = await User.find()
-      .sort({ createdAt: -1 })
-      .limit(5);
+    const last24Hours = new Date(
+  Date.now() - 24 * 60 * 60 * 1000
+);
+
+const recentUsers = await User.find({
+  createdAt: { $gte: last24Hours },
+})
+.sort({ createdAt: -1 })
+.limit(10);
 
     const recentTransactions = await Transaction.find()
       .sort({ createdAt: -1 })
@@ -201,7 +207,9 @@ export const getUserByPhone = async (req, res) => {
   try {
     const { phone } = req.params;
 
-    const user = await User.findOne({ phone });
+const user = await User.findOne({
+  phone: { $regex: phone, $options: "i" },
+});
 
     if (!user) {
       return res.json({ message: "User not found" });
