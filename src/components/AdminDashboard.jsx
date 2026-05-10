@@ -8,14 +8,13 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("adminToken");
+  
 
   
   // 🔹 Fetch dashboard stats
-  useEffect(() => {
+ useEffect(() => {
   const adminToken = localStorage.getItem("adminToken");
 
-  // 🔥 if no token go login
   if (!adminToken) {
     navigate("/admin-login");
     return;
@@ -36,7 +35,6 @@ const AdminDashboard = () => {
 
       const data = await res.json();
 
-      // 🔥 ONLY redirect if token truly invalid
       if (
         data.message === "Invalid token" ||
         data.message === "No token"
@@ -57,8 +55,7 @@ const AdminDashboard = () => {
 
   fetchStats();
 
-}, []);
-}, [token, navigate]);
+}, [navigate]);
 
   // 🔹 Search user by phone
   const handleSearch = async () => {
