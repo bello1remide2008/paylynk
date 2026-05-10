@@ -159,7 +159,7 @@ const searchUser = async () => {
   };
   // 🔹 Freeze Account
 const freezeAccount = async (accountId) => {
-  await fetch(`https://paylynk-1.onrender.com/api/admin/freeze/${accountId}`, {
+  await fetch(`https://paylynk-1.onrender.com/api/admin/freeze-account/:id`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
