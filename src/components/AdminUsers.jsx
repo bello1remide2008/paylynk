@@ -36,7 +36,7 @@ const AdminUsers = () => {
 
     if (!message) return;
 
-    await fetch("https://paylynk-1.onrender.com/api/admin/send-mail/:id", {
+    await fetch("https://paylynk-1.onrender.com/api/admin/send-mail-to-users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
