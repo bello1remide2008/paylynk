@@ -223,9 +223,9 @@ const user = await User.findOne({
 };
 export const sendMailToUsers = async (req, res) => {
   try {
-    const { userId, message } = req.body;
+    const { message } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({
@@ -238,7 +238,7 @@ export const sendMailToUsers = async (req, res) => {
       subject: "Message from Paylynk Admin",
       text: message,
       html: `
-        <div style="font-family: Arial; padding:20px;">
+        <div style="font-family: Arial;">
           <h2>Paylynk Notification</h2>
           <p>${message}</p>
         </div>
@@ -247,7 +247,7 @@ export const sendMailToUsers = async (req, res) => {
 
     if (!success) {
       return res.status(500).json({
-        message: "Email failed",
+        message: "Failed to send email",
       });
     }
 
