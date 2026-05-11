@@ -59,32 +59,31 @@ const AdminDashboard = () => {
 
   // 🔹 Search user by phone
   const handleSearch = async () => {
-    if (!phone) return alert("Enter phone number");
+  if (!phone) return alert("Enter search");
 
-    try {
-      const res = await fetch(
-        `https://paylynk-1.onrender.com/api/admin/user-by-phone/${phone}`,
-        {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.user) {
-        // 🔥 Go to profile page
-        navigate(`/admin/user/${data.user._id}`);
-      } else {
-        alert("User not found");
+  try {
+    const res = await fetch(
+      `https://paylynk-1.onrender.com/api/admin/users?search=${phone}`,
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
       }
+    );
 
-    } catch (error) {
-      console.error(error);
-      alert("Error searching user");
+    const data = await res.json();
+
+    if (data.users && data.users.length > 0) {
+      navigate(`/admin/user/${data.users[0]._id}`);
+    } else {
+      alert("User not found");
     }
-  };
+
+  } catch (error) {
+    console.error(error);
+    alert("Search failed");
+  }
+};
 
   return (
      <div>
