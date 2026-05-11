@@ -6,7 +6,6 @@ import {
   blockUser,
   unblockUser,
   reverseTransaction,
-  getUserByPhone,
   sendMailToUsers,
     freezeAccount,
     unfreezeAccount,
