@@ -25,7 +25,7 @@ const AdminNavbar = () => {
             <button onClick={() => navigate("/admin")}>Dashboard</button>
             <button onClick={() => navigate("/admin/users")}>Users</button>
             <button onClick={() => navigate("/admin/transactions")}>Profiles</button>
-            <button onClick={() => navigate("/admin/send-otp")}>Send OTP</button>
+            <button onClick={() => navigate("/admin/send-otp")}>Send Emails</button>
           </div>
         </div>
       )}
