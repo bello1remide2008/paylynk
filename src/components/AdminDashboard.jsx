@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         `https://paylynk-1.onrender.com/api/admin/user-by-phone/${phone}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${adminToken}`,
           },
         }
       );
