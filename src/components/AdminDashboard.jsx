@@ -125,17 +125,45 @@ const AdminDashboard = () => {
 </div>
 
       {/* 👤 RECENT USERS */}
-      <div className="mt-10 p-4">
-        <h3 className="text-center font-bold">Recent Users</h3>
+   <div className="mt-10 p-4">
+  <h3 className="text-2xl font-bold text-center mb-6">
+    Recent Users
+  </h3>
 
-        <div className="flex flex-col items-center gap-3 mt-4">
-          {stats.recentUsers?.map((user) => (
-            <div key={user._id} className="border p-2 w-80 rounded">
-              {user.name} - {user.phone}
-            </div>
-          ))}
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {stats.recentUsers?.map((user) => (
+      <div
+        key={user._id}
+        className="bg-white shadow rounded-xl p-4 border hover:shadow-lg transition"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-bold text-lg">
+            {user.name}
+          </h4>
+
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+            Active
+          </span>
         </div>
+
+        <p className="text-sm text-gray-600 mb-1">
+          📧 {user.email || "No email"}
+        </p>
+
+        <p className="text-sm text-gray-600">
+          📱 {user.phone || "No phone"}
+        </p>
+
+        <button
+          onClick={() => navigate(`/admin/user/${user._id}`)}
+          className="mt-4 w-full bg-black text-white py-2 rounded-lg"
+        >
+          View Profile
+        </button>
       </div>
+    ))}
+  </div>
+</div>
 
     </div>
   );
