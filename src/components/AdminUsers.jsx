@@ -98,7 +98,7 @@ const AdminUsers = () => {
           >
             {/* PROFILE */}
             <div
-              onClick={() => navigate(`/admin/user/${user._id}`)}
+              onClick={() => navigate(`/admin/user/:id`)}
               className="cursor-pointer"
             >
               <div className="flex items-center gap-4">
@@ -146,7 +146,7 @@ const AdminUsers = () => {
 
               <button
                 onClick={() =>
-                  navigate("/admin/transactions")
+                  navigate("/admin/user/:id")
                 }
                 className="flex-1 bg-black text-white py-2 rounded-lg"
               >
