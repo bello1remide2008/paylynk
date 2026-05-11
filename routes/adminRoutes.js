@@ -3,7 +3,6 @@ import {
   getUsers,
   getUserDetails,
   getAdminStats,
-  getUserProfile,
   blockUser,
   unblockUser,
   reverseTransaction,
@@ -34,6 +33,7 @@ router.get("/search-user", adminProtect, async (req, res) => {
       $or: [
         { email: { $regex: query, $options: "i" } },
         { phone: { $regex: query, $options: "i" } },
+        
       ],
     });
 
@@ -59,8 +59,6 @@ router.patch("/unblock/:id", adminProtect, unblockUser);
 router.post("/reverse/:id", adminProtect, reverseTransaction);
 
 router.post("/send-otp", adminProtect, sendAdminOtp);
-
-router.get("/user-by-phone/:phone", adminProtect, getUserByPhone);
 
 router.post("/send-mail/:id", adminProtect, sendMailToUsers);
 
