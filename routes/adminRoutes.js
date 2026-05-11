@@ -3,6 +3,7 @@ import {
   getUsers,
   getUserDetails,
   getAdminStats,
+  getUserProfile,
   blockUser,
   unblockUser,
   reverseTransaction,
