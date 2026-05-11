@@ -204,24 +204,7 @@ export const sendAdminOtp = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export const getUserByPhone = async (req, res) => {
-  try {
-    const { phone } = req.params;
 
-const user = await User.findOne({
-  phone: { $regex: phone, $options: "i" },
-});
-
-    if (!user) {
-      return res.json({ message: "User not found" });
-    }
-
-    res.json({ user });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 export const sendMailToUsers = async (req, res) => {
   try {
     const { message } = req.body;
