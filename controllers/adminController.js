@@ -68,7 +68,7 @@ const recentUsers = await User.find({
   createdAt: { $gte: last24Hours },
 })
 .sort({ createdAt: -1 })
-.limit(10);
+.limit(10)
      .select("name email phone");
 
     const recentTransactions = await Transaction.find()
