@@ -95,7 +95,7 @@ function App() {
   element={adminToken ? <AdminDashboard /> : <AdminLogin />}
 />
         <Route path="/admin/send-otp" element={<AdminSendOtp />} />
-        <Route path="/admin/transactions" element={<AdminTransactions />} />
+        <Route path="/admin/user/:id" element={<AdminTransactions />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/navbar" element={<AdminNavbar />} />
         
