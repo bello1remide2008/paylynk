@@ -17,7 +17,7 @@ const AdminUsers = () => {
         `https://paylynk-1.onrender.com/api/admin/users?search=${search}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${adminToken}`,
           },
         }
       );
@@ -48,7 +48,7 @@ const AdminUsers = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${adminToken}`,
           },
           body: JSON.stringify({
             message,
