@@ -159,7 +159,7 @@ const searchUser = async () => {
   };
   // 🔹 Freeze Account
 const freezeAccount = async (accountId) => {
-  await fetch(`https://paylynk-1.onrender.com/api/admin/freeze-account/:id`, {
+  await fetch(`https://paylynk-1.onrender.com/api/admin/freeze-account/${accountId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -169,10 +169,14 @@ const freezeAccount = async (accountId) => {
   alert("Account frozen");
   fetchProfile();
 };
+  useEffect(() => {
+  const stored = JSON.parse(localStorage.getItem("recentProfiles")) || [];
+  setRecent(stored);
+}, []);
 
 // 🔹 Unfreeze Account
 const unfreezeAccount = async (accountId) => {
-  await fetch(`https://paylynk-1.onrender.com/api/admin/unfreeze/${accountId}`, {
+  await fetch(`https://paylynk-1.onrender.com/api/admin/unfreeze-account/${accountId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -190,23 +194,22 @@ useEffect(() => {
 
 if (error) return <p className="p-6 text-red-500">{error}</p>;
 
-useEffect(() => {
-  const stored = JSON.parse(localStorage.getItem("recentProfiles")) || [];
-  setRecent(stored);
-}, []);
+
 
   return (
   <div className="min-h-screen bg-gray-100 p-6">
     <div className="bg-white p-4 rounded mb-4">
-  <input
-    placeholder="Search user..."
-    className="border p-2 w-full"
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        window.location.href = `/admin/user/${e.target.value}`;
-      }
-    }}
-  />
+<input
+  placeholder="Search email or phone..."
+  className="border p-2 w-full"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      searchUser();
+    }
+  }}
+/>
 </div>
   <div className="bg-white p-4 rounded-xl shadow mb-4">
 
