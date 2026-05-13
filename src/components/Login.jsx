@@ -51,9 +51,9 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phone: phoneNumber,
-          password,
-        }),
+  phone,
+  password,
+}),
       });
 
       // 🔥 HANDLE NON-JSON ERROR
