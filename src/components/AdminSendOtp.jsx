@@ -8,7 +8,7 @@ const AdminSendOtp = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  const token = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem("adminToken");
 
   // 🔥 SEND SINGLE MAIL
   const sendSingleMail = async () => {
