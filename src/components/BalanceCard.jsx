@@ -16,6 +16,9 @@ const BalanceCard = ({
   const userInfo = JSON.parse(
   localStorage.getItem("userInfo")
 );
+  const accountDetails = JSON.parse(
+  localStorage.getItem("accountDetails")
+);
 
   const maskAccount = (acc) =>
     acc ? `${"*".repeat(acc.length - 4)}${acc.slice(-4)}` : "";
@@ -108,17 +111,17 @@ const BalanceCard = ({
               key={index}
               onClick={() => setActiveAccount(acc)}
               className={`min-w-[280px] p-4 rounded-xl snap-center cursor-pointer transition ${
-                activeAccount?.accountNumber === acc.accountNumber
+                activeAccount?.accountNumber === accountDetails?.accountNumber
                   ? "bg-white text-black"
                   : "bg-white/20"
               }`}
             >
               {/* BANK */}
-              <p className="text-sm">{acc.bankName}</p>
+              <p className="text-sm">{accountDetails?.bankName}</p>
 
               {/* ACCOUNT */}
               <p className="font-semibold">
-                {maskAccount(acc.accountNumber)}
+                {maskAccount(accountDetails?.accountNumber)}
               </p>
 
               {/* BALANCE */}
