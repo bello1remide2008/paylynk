@@ -12,9 +12,10 @@ const BalanceCard = ({
   const [showBalance, setShowBalance] = useState(true);
   const navigate = useNavigate();
   const scrollRef = useRef();
-const displayName =
-  activeAccount?.accountName || userName || "User";
-  const toggleBalance = () => setShowBalance(!showBalance);
+
+  const userInfo = JSON.parse(
+  localStorage.getItem("userInfo")
+);
 
   const maskAccount = (acc) =>
     acc ? `${"*".repeat(acc.length - 4)}${acc.slice(-4)}` : "";
@@ -70,7 +71,7 @@ const displayName =
       {/* HEADER */}
       <div className="text-center mb-4">
         <p className="text-sm opacity-60">Welcome back</p>
-        <h1 className="text-xl font-bold">{displayName} 👋</h1>
+        <h1 className="text-xl font-bold">{userInfo?.name} 👋</h1>
       </div>
 
       {/* TOTAL BALANCE */}
