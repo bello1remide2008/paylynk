@@ -165,23 +165,66 @@ export const loginUser = async (req, res) => {
   try {
     const { phone, password } = req.body;
 
-    const user = await User.findOne({ phone });
-
-    if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    // 🔥 Validate fields
+    if (!phone || !password) {
+      return res.status(400).json({
+        message: "Phone and password are required",
+      });
     }
 
+    // 🔥 Remove spaces from phone
+    const cleanPhone = phone.trim();
+
+    // 🔥 Find user
+    const user = await User.findOne({
+      phone: cleanPhone,
+    });
+
+    // 🔥 Check user
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    // 🔥 Check password
+    const isMatch = await user.matchPassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    // 🔥 Check verification
     if (!user.isVerified) {
-      return res.status(403).json({ message: "Verify your account first" });
+      return res.status(403).json({
+        message: "Verify your account first",
+      });
     }
-const token = generateToken(user._id);
+
+    // 🔥 Generate token
+    const token = generateToken(user._id);
+
+    // 🔥 Send response
     res.json({
       success: true,
-      token: generateToken(user._id),
-      user,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        username: user.username,
+      },
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
