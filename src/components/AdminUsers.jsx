@@ -8,7 +8,7 @@ const AdminUsers = () => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem("adminToken");
 
   // 🔥 FETCH USERS
   const fetchUsers = async () => {
