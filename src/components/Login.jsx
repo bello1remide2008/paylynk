@@ -11,6 +11,7 @@ const Login = () => {
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const data = await res.json();
 
   const addNotification = (title, message, type = "System") => {
     const existing =
