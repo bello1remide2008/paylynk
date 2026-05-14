@@ -34,19 +34,11 @@ const Dashboard = () => {
   };
   
 
-useEffect(() => {
-  try {
-    const data = localStorage.getItem("epay_user_name");
+const storedUser = JSON.parse(localStorage.getItem("userInfo"));
 
-    if (!data) return;
-
-    const profile = JSON.parse(data);
-    setUserName(profile.name || profile);
-  } catch (error) {
-    // fallback if it's just a plain string
-    setUserName(localStorage.getItem("epay_user_name"));
-  }
-}, []);
+if (storedUser) {
+  setUserName(storedUser.name);
+}
 
  
 
