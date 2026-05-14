@@ -22,7 +22,7 @@ const AdminSendOtp = () => {
       setStatus("");
 
       const res = await fetch(
-        "https://paylynk-1.onrender.com/api/admin/send-mail/:id ",
+        "https://paylynk-1.onrender.com/api/admin/send-mail",
         {
           method: "POST",
           headers: {
