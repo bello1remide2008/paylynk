@@ -60,7 +60,7 @@ router.post("/reverse/:id", adminProtect, reverseTransaction);
 
 router.post("/send-otp", adminProtect, sendAdminOtp);
 
-router.post("/send-mail/:id", adminProtect, sendMailToUsers);
+router.post("/send-mail", adminProtect, sendMailToUsers);
 
 router.post("/freeze-account/:id", adminProtect, freezeAccount);
 
