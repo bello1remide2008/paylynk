@@ -161,72 +161,86 @@ export const verifyOtp = async (req, res) => {
 // ========================
 // LOGIN
 // ========================
+// LOGIN USER
+// ========================
+
+
+
 export const loginUser = async (req, res) => {
   try {
     const { login, password } = req.body;
 
-    // 🔥 Validate fields
+    // 🔥 VALIDATE INPUTS
     if (!login || !password) {
       return res.status(400).json({
+        success: false,
         message: "Email/Phone and password are required",
       });
     }
 
-    // 🔥 Remove spaces
+    // 🔥 CLEAN INPUT
     const cleanLogin = login.trim();
 
-    // 🔥 Find user with EMAIL or PHONE
+    // 🔥 FIND USER BY EMAIL OR PHONE
     const user = await User.findOne({
       $or: [
-        { email: cleanLogin },
+        { email: cleanLogin.toLowerCase() },
         { phone: cleanLogin },
       ],
     });
 
-    // 🔥 Check user
+    // 🔥 USER NOT FOUND
     if (!user) {
       return res.status(401).json({
+        success: false,
         message: "Invalid credentials",
       });
     }
 
-    // 🔥 Check password
+    // 🔥 CHECK PASSWORD
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       return res.status(401).json({
+        success: false,
         message: "Invalid credentials",
       });
     }
 
-    // 🔥 Check verification
+    // 🔥 CHECK IF VERIFIED
     if (!user.isVerified) {
       return res.status(403).json({
+        success: false,
         message: "Verify your account first",
       });
     }
 
-    // 🔥 Generate token
+    // 🔥 GENERATE TOKEN
     const token = generateToken(user._id);
 
-    // 🔥 Send response
-    res.json({
+    // 🔥 SUCCESS RESPONSE
+    res.status(200).json({
       success: true,
+      message: "Login successful",
       token,
+
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
         username: user.username,
+        role: user.role,
+        profileImage: user.profileImage,
       },
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
 
     res.status(500).json({
-      message: error.message,
+      success: false,
+      message: "Server error",
     });
   }
 };
