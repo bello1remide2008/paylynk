@@ -146,7 +146,7 @@ const AdminUsers = () => {
 
               <button
                 onClick={() =>
-                  navigate("/admin/user/:id")
+                  navigate(`/admin/user/${user._id}`)
                 }
                 className="flex-1 bg-black text-white py-2 rounded-lg"
               >
