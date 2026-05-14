@@ -163,21 +163,24 @@ export const verifyOtp = async (req, res) => {
 // ========================
 export const loginUser = async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { login, password } = req.body;
 
     // 🔥 Validate fields
-    if (!phone || !password) {
+    if (!login || !password) {
       return res.status(400).json({
-        message: "Phone and password are required",
+        message: "Email/Phone and password are required",
       });
     }
 
-    // 🔥 Remove spaces from phone
-    const cleanPhone = phone.trim();
+    // 🔥 Remove spaces
+    const cleanLogin = login.trim();
 
-    // 🔥 Find user
+    // 🔥 Find user with EMAIL or PHONE
     const user = await User.findOne({
-      phone: cleanPhone,
+      $or: [
+        { email: cleanLogin },
+        { phone: cleanLogin },
+      ],
     });
 
     // 🔥 Check user
