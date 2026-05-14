@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import banks from "./Banks";
-import phone from "phone.png"
+import phone from "./phone.png"
 
 const SelectBank = () => {
   const navigate = useNavigate();
