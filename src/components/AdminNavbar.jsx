@@ -24,7 +24,7 @@ const AdminNavbar = () => {
           <div className="mt-10 flex flex-col gap-6">
             <button onClick={() => navigate("/admin")}>Dashboard</button>
             <button onClick={() => navigate("/admin/users")}>Users</button>
-            <button onClick={() => navigate("/admin/transactions")}>Profiles</button>
+            <button onClick={() => navigate(`/admin/user/${user._id}`)}>Profiles</button>
             <button onClick={() => navigate("/admin/send-otp")}>Send Emails</button>
           </div>
         </div>
