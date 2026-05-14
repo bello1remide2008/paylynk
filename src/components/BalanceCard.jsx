@@ -10,15 +10,16 @@ const BalanceCard = ({
   setAccounts
 }) => {
   const [showBalance, setShowBalance] = useState(true);
+  const toggleBalance = () => {
+  setShowBalance(!showBalance);
+};
   const navigate = useNavigate();
   const scrollRef = useRef();
 
   const userInfo = JSON.parse(
   localStorage.getItem("userInfo")
 );
-  const accountDetails = JSON.parse(
-  localStorage.getItem("accountDetails")
-);
+
 
   const maskAccount = (acc) =>
     acc ? `${"*".repeat(acc.length - 4)}${acc.slice(-4)}` : "";
@@ -111,17 +112,17 @@ const BalanceCard = ({
               key={index}
               onClick={() => setActiveAccount(acc)}
               className={`min-w-[280px] p-4 rounded-xl snap-center cursor-pointer transition ${
-                activeAccount?.accountNumber === accountDetails?.accountNumber
+                activeAccount?.accountNumber === acc.accountNumber
                   ? "bg-white text-black"
                   : "bg-white/20"
               }`}
             >
               {/* BANK */}
-              <p className="text-sm">{accountDetails?.bankName}</p>
+              <p className="text-sm">{acc.bankName}</p>
 
               {/* ACCOUNT */}
               <p className="font-semibold">
-                {maskAccount(accountDetails?.accountNumber)}
+                {maskAccount(acc.accountNumber)}
               </p>
 
               {/* BALANCE */}
