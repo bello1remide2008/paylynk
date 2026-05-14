@@ -154,13 +154,13 @@ const Login = () => {
           </h1>
 
           <p className="text-gray-300 mb-6">
-            Enter your phone number and password
+            Enter your phone number/Email and password
           </p>
 
           {/* PHONE INPUT */}
           <input
             type="tel"
-            placeholder="Phone number"
+            placeholder="Phone number/Email"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             className="w-full px-4 py-3 rounded-full bg-[#10263f] mb-4 outline-none"
