@@ -79,24 +79,55 @@ const AccountVerification = () => {
 
   // =========================
   // FINAL LINK ACCOUNT
-  // =========================
-  const handleContinue = () => {
-    const accountDetails = {
-      bankName: selectedBank.name,
-      bankCode: selectedBank.code,
-      accountNumber,
-      accountName,
-    };
+const handleContinue = () => {
+  if (!selectedBank) {
+    alert("Select a bank");
+    return;
+  }
+
+  // 🔥 FAKE ACCOUNT DATA
+  const newAccount = {
+    bankName: selectedBank.name,
+    accountNumber:
+      Math.floor(1000000000 + Math.random() * 9000000000).toString(),
+    balance: 50000,
+    isDefault: true,
+  };
+
+  // 🔥 GET EXISTING ACCOUNTS
+  const existingAccounts =
+    JSON.parse(localStorage.getItem("epay_accounts")) || [];
+
+  // 🔥 CHECK DUPLICATES
+  const alreadyExists = existingAccounts.find(
+    (acc) => acc.bankName === newAccount.bankName
+  );
+
+  // 🔥 SAVE ACCOUNT
+  if (!alreadyExists) {
+    existingAccounts.push(newAccount);
 
     localStorage.setItem(
-      "accountDetails",
-      JSON.stringify(accountDetails)
+      "epay_accounts",
+      JSON.stringify(existingAccounts)
     );
+  }
 
-    alert("Account linked successfully");
+  // 🔥 SAVE ACTIVE ACCOUNT
+  localStorage.setItem(
+    "accountDetails",
+    JSON.stringify(newAccount)
+  );
 
-    navigate("/dashboard");
-  };
+  localStorage.setItem(
+    "activeAccount",
+    JSON.stringify(newAccount)
+  );
+
+  alert("Account linked successfully ✅");
+
+  navigate("/dashboard");
+};
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
