@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import banks from "./Banks";
+import phonr feom "phone.png"
 
 const SelectBank = () => {
   const navigate = useNavigate();
@@ -56,18 +57,45 @@ const SelectBank = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="hidden lg:flex w-1/2 items-center justify-center bg-white">
-        <div className="max-w-md p-8">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to take control of your finances?
-          </h2>
-          <p className="text-gray-600">
-            Join over 500,000 users who have transformed their financial lives.
-          </p>
-        </div>
-      </div>
+       <div className="hidden lg:flex items-center justify-center bg-white px-10">
 
+        <div className="max-w-md">
+
+          <h2 className="text-3xl font-bold mb-4 text-black">
+            Banking made simple.
+          </h2>
+
+          <p className="text-gray-600 mb-6">
+            Secure payments, instant transfers,
+            and full control of your money.
+          </p>
+
+          <div className="flex gap-4 mb-6">
+
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+              className="h-10 cursor-pointer"
+              alt="Google Play"
+            />
+
+            <img
+              src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+              className="h-10 cursor-pointer"
+              alt="App Store"
+            />
+
+          </div>
+
+          {/* PHONE IMAGE */}
+          <img
+            src={phone}
+            alt="App preview"
+            className="w-full"
+          />
+
+        </div>
+
+      </div>
     </div>
   );
 };
