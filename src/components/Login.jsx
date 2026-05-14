@@ -5,14 +5,15 @@ import phone from "./phone.png";
 
 const Login = () => {
   const navigate = useNavigate();
+
   const [showBiometric, setShowBiometric] = useState(false);
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState("user");
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const data = await res.json();
 
+  // 🔥 Notifications
   const addNotification = (title, message, type = "System") => {
     const existing =
       JSON.parse(localStorage.getItem("epay_notifications")) || [];
@@ -31,6 +32,7 @@ const Login = () => {
     );
   };
 
+  // 🔥 LOGIN FUNCTION
   const handleLogin = async () => {
     // 🔥 ADMIN REDIRECT
     if (role === "admin") {
@@ -38,6 +40,7 @@ const Login = () => {
       return;
     }
 
+    // 🔥 VALIDATION
     if (!phoneNumber || !password) {
       alert("Please fill in all fields");
       return;
@@ -46,45 +49,61 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("https://paylynk-1.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-  phone,
-  password,
-}),
-      });
+      // 🔥 API REQUEST
+      const res = await fetch(
+        "https://paylynk-1.onrender.com/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-      // 🔥 HANDLE NON-JSON ERROR
+          body: JSON.stringify({
+            phone: phoneNumber,
+            password,
+          }),
+        }
+      );
+
+      // 🔥 RESPONSE
+      const data = await res.json();
+
+      console.log("LOGIN RESPONSE:", data);
+
+      // 🔥 HANDLE ERRORS
       if (!res.ok) {
-        const text = await res.text();
-        console.error("SERVER ERROR:", text);
-        alert("Login failed");
+        alert(data.message || "Login failed");
         return;
       }
 
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
+      // 🔥 SAVE TOKEN
+      localStorage.setItem("token", data.token);
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      // 🔥 SAVE USER
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify(data.user)
+      );
 
-        addNotification(
-          "Login detected",
-          `You successfully logged in as ${phoneNumber}`,
-          "System"
-        );
+      // 🔥 SAVE NAME
+      localStorage.setItem(
+        "userName",
+        data.user.name
+      );
 
-        // ✅ GO TO DASHBOARD
-        navigate("/dashboard");
+      // 🔥 NOTIFICATION
+      addNotification(
+        "Login Successful",
+        `Welcome back ${data.user.name}`,
+        "System"
+      );
 
-        // OPTIONAL biometric after success
-        setShowBiometric(true);
-      } else {
-        alert(data.message || "Invalid credentials");
-      }
+      // 🔥 BIOMETRIC OPTION
+      setShowBiometric(true);
+
+      // 🔥 GO DASHBOARD
+      navigate("/dashboard");
+
     } catch (err) {
       console.error(err);
       alert("Server error");
@@ -92,11 +111,8 @@ const Login = () => {
       setLoading(false);
     }
   };
-  localStorage.setItem(
-  "userInfo",
-  JSON.stringify(data.user)
-);
 
+  // 🔥 BIOMETRIC LOGIN
   const handleBiometricLogin = async () => {
     try {
       alert("Fingerprint verified ✅");
@@ -108,13 +124,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      
-      {/* LEFT */}
+
+      {/* LEFT SIDE */}
       <div className="flex items-center justify-center bg-[#0b1c2d] px-6">
+
         <div className="w-full max-w-md text-white">
 
           {/* ROLE SELECT */}
           <div className="relative mb-4">
+
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
@@ -127,39 +145,47 @@ const Login = () => {
             <span className="absolute right-4 top-3 text-white pointer-events-none">
               ▼
             </span>
+
           </div>
 
-          <h1 className="text-3xl font-bold mb-2">Login</h1>
+          {/* TITLE */}
+          <h1 className="text-3xl font-bold mb-2">
+            Login
+          </h1>
 
           <p className="text-gray-300 mb-6">
             Enter your phone number and password
           </p>
 
-          {/* PHONE */}
+          {/* PHONE INPUT */}
           <input
             type="tel"
             placeholder="Phone number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full px-4 py-3 rounded-full bg-[#10263f] mb-4"
+            className="w-full px-4 py-3 rounded-full bg-[#10263f] mb-4 outline-none"
           />
 
           {/* PASSWORD */}
           <div className="relative mb-4">
+
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-full bg-[#10263f]"
+              className="w-full px-4 py-3 rounded-full bg-[#10263f] outline-none"
             />
+
             <EyeIcon className="w-5 h-5 absolute right-4 top-3.5 text-gray-400" />
+
           </div>
 
+          {/* LOGIN BUTTON */}
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-[#FE3737] py-4 rounded-full"
+            className="w-full bg-[#FE3737] py-4 rounded-full hover:bg-red-600 transition"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -167,42 +193,76 @@ const Login = () => {
           {/* BIOMETRIC */}
           {showBiometric && (
             <div className="mt-6 text-center">
+
               <button
                 onClick={handleBiometricLogin}
-                className="border px-6 py-3 rounded-full"
+                className="border px-6 py-3 rounded-full hover:bg-white hover:text-black transition"
               >
                 Login with Biometrics
               </button>
+
             </div>
           )}
 
+          {/* SIGNUP */}
           <p className="text-sm mt-4">
+
             Don’t have an account?{" "}
+
             <span
               onClick={() => navigate("/signup")}
               className="text-orange-400 cursor-pointer"
             >
               Sign up
             </span>
+
           </p>
+
         </div>
+
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT SIDE */}
       <div className="hidden lg:flex items-center justify-center bg-white px-10">
-         <div className="max-w-md">
-           <h2 className="text-3xl font-bold mb-4 text-black">Banking made simple.</h2>
-            <p className="text-gray-600 mb-6"> Secure payments, instant transfers, and full control of your money. </p>
-             
-             <div className="flex gap-4 mb-6"> 
-              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" className="h-10 cursor-pointer" alt="Google Play" />
 
-              <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" className="h-10 cursor-pointer" alt="App Store" /> 
-              </div>
-              
-               <img src={phone} alt="App preview" className="w-full" />
-                </div> 
-                </div>
+        <div className="max-w-md">
+
+          <h2 className="text-3xl font-bold mb-4 text-black">
+            Banking made simple.
+          </h2>
+
+          <p className="text-gray-600 mb-6">
+            Secure payments, instant transfers,
+            and full control of your money.
+          </p>
+
+          <div className="flex gap-4 mb-6">
+
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+              className="h-10 cursor-pointer"
+              alt="Google Play"
+            />
+
+            <img
+              src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+              className="h-10 cursor-pointer"
+              alt="App Store"
+            />
+
+          </div>
+
+          {/* PHONE IMAGE */}
+          <img
+            src={phone}
+            alt="App preview"
+            className="w-full"
+          />
+
+        </div>
+
+      </div>
+
     </div>
   );
 };
