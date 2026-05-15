@@ -74,7 +74,7 @@ function App() {
   element={<ResetPassword />}
 
         
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<DashboardLayout />} />
           <Route index element={<Dashboard />} />
           <Route path="balance-card" element={<BalanceCard />} /> 
           <Route path="settings" element={<Settings />} />
