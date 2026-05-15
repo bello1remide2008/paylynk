@@ -49,7 +49,10 @@ otpExpires: {
   type: String,
   default: "https://via.placeholder.com/150",
 },
-
+        resetPasswordToken: {
+      type:String,
+    resetPasswordExpire: Date,
+        },
 isBlocked: {
   type: Boolean,
   default: false,
