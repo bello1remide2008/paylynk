@@ -8,7 +8,8 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  
+   const adminToken = localStorage.getItem("adminToken");
+
 
   
   // 🔹 Fetch dashboard stats
