@@ -399,7 +399,7 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // FRONTEND RESET LINK
-    const resetUrl = `https://paylynk-fsfg.vercel.app/reset-password/${resetToken}`;
+    const resetUrl = `https://paylynk-fsfg-h4i7mbh8r-bello-iremides-projects.vercel.app/reset-password/${resetToken}`;
 
     // EMAIL MESSAGE
     const message = `
