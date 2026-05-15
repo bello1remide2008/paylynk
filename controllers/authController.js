@@ -416,9 +416,10 @@ If you did not request this, ignore this email.
     // SEND EMAIL WITH ERROR HANDLING
     try {
       const emailResult = await sendEmail(
-        user.email,
-        "Password Reset Request",
-        message
+        to: user.email,
+  subject: "Password Reset Request",
+  text: message,
+  html: `<p>${message}</p>`,
       );
 
       console.log("📧 Email sent result:", emailResult);
