@@ -367,6 +367,8 @@ export const resetPassword = async (req, res) => {
 // =====================================
 // FORGOT PASSWORD
 // =====================================
+
+
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -381,57 +383,64 @@ export const forgotPassword = async (req, res) => {
       });
     }
 
-    // GENERATE TOKEN
-    const resetToken = crypto
-      .randomBytes(32)
-      .toString("hex");
+    // GENERATE RESET TOKEN
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // HASH TOKEN
+    // HASH TOKEN (STORE IN DB)
     const hashedToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    // SAVE TOKEN
+    // SAVE TOKEN TO USER
     user.resetPasswordToken = hashedToken;
-
-    // EXPIRES IN 15 MINUTES
-    user.resetPasswordExpire =
-      Date.now() + 15 * 60 * 1000;
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
     await user.save();
 
-    // RESET URL
-    const resetUrl =
-      `http://paylynkds.com/reset-password/${resetToken}`;
+    // FRONTEND RESET LINK
+    const resetUrl = `https://paylynkds.com/reset-password/${resetToken}`;
 
     // EMAIL MESSAGE
     const message = `
 You requested a password reset.
 
 Click the link below:
-
 ${resetUrl}
 
 This link expires in 15 minutes.
+
+If you did not request this, ignore this email.
 `;
 
-    // SEND EMAIL
-    await sendEmail(
-      user.email,
-      "Password Reset",
-      message
-    );
+    // SEND EMAIL WITH ERROR HANDLING
+    try {
+      const emailResult = await sendEmail(
+        user.email,
+        "Password Reset Request",
+        message
+      );
 
-    res.status(200).json({
+      console.log("📧 Email sent result:", emailResult);
+    } catch (emailError) {
+      console.log("❌ Email failed:", emailError);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send reset email",
+      });
+    }
+
+    // SUCCESS RESPONSE
+    return res.status(200).json({
       success: true,
-      message: "Reset email sent",
+      message: "Reset email sent successfully",
     });
 
   } catch (error) {
-    console.log(error);
+    console.log("❌ Forgot Password Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
