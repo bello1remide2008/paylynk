@@ -10,7 +10,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState("user");
 
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
   // 🔥 Notifications
@@ -34,14 +34,14 @@ const Login = () => {
 
   // 🔥 LOGIN FUNCTION
   const handleLogin = async () => {
-    // 🔥 ADMIN REDIRECT
+    // ADMIN
     if (role === "admin") {
       navigate("/admin-login");
       return;
     }
 
-    // 🔥 VALIDATION
-    if (!phoneNumber || !password) {
+    // VALIDATION
+    if (!login || !password) {
       alert("Please fill in all fields");
       return;
     }
@@ -49,7 +49,6 @@ const Login = () => {
     try {
       setLoading(true);
 
-      // 🔥 API REQUEST
       const res = await fetch(
         "https://paylynk-1.onrender.com/api/auth/login",
         {
@@ -59,49 +58,48 @@ const Login = () => {
           },
 
           body: JSON.stringify({
-            phone: phoneNumber,
+            login,
             password,
           }),
         }
       );
 
-      // 🔥 RESPONSE
       const data = await res.json();
 
       console.log("LOGIN RESPONSE:", data);
 
-      // 🔥 HANDLE ERRORS
+      // HANDLE ERROR
       if (!res.ok) {
         alert(data.message || "Login failed");
         return;
       }
 
-      // 🔥 SAVE TOKEN
+      // SAVE TOKEN
       localStorage.setItem("token", data.token);
 
-      // 🔥 SAVE USER
+      // SAVE USER
       localStorage.setItem(
         "userInfo",
         JSON.stringify(data.user)
       );
 
-      // 🔥 SAVE NAME
+      // SAVE NAME
       localStorage.setItem(
-        "userName",
+        "epay_user_name",
         data.user.name
       );
 
-      // 🔥 NOTIFICATION
+      // NOTIFICATION
       addNotification(
         "Login Successful",
         `Welcome back ${data.user.name}`,
         "System"
       );
 
-      // 🔥 BIOMETRIC OPTION
+      // OPTIONAL BIOMETRIC
       setShowBiometric(true);
 
-      // 🔥 GO DASHBOARD
+      // GO TO DASHBOARD
       navigate("/dashboard");
 
     } catch (err) {
@@ -125,12 +123,12 @@ const Login = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
-      {/* LEFT SIDE */}
+      {/* LEFT */}
       <div className="flex items-center justify-center bg-[#0b1c2d] px-6">
 
         <div className="w-full max-w-md text-white">
 
-          {/* ROLE SELECT */}
+          {/* ROLE */}
           <div className="relative mb-4">
 
             <select
@@ -154,15 +152,15 @@ const Login = () => {
           </h1>
 
           <p className="text-gray-300 mb-6">
-            Enter your phone number/Email and password
+            Enter your Email or Phone Number
           </p>
 
-          {/* PHONE INPUT */}
+          {/* LOGIN INPUT */}
           <input
-            type="tel"
-            placeholder="Phone number/Email"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            type="text"
+            placeholder="Phone number or Email"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
             className="w-full px-4 py-3 rounded-full bg-[#10263f] mb-4 outline-none"
           />
 
@@ -222,7 +220,7 @@ const Login = () => {
 
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT */}
       <div className="hidden lg:flex items-center justify-center bg-white px-10">
 
         <div className="max-w-md">
@@ -252,7 +250,6 @@ const Login = () => {
 
           </div>
 
-          {/* PHONE IMAGE */}
           <img
             src={phone}
             alt="App preview"
