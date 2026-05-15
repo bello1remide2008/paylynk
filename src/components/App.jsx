@@ -11,6 +11,9 @@ import Verification from "./Verification";
 import AccountVerification from "./AccountVerification";
 import SelectBank from "./SelectBank";
 import EnterBvn from "./EnterBvn";
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
+
 
 import DashboardLayout from "./DashboardLayout";
 import Dashboard from "./Dashboard";
@@ -65,6 +68,10 @@ function App() {
         <Route path="/account-verification" element={<AccountVerification />} />
         <Route path="/select-bank" element={<SelectBank />} />
         <Route path="/enter-bvn" element={<EnterBvn />} />
+       <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
+  path="/reset-password/:token"
+  element={<ResetPassword />}
 
         {/* USER DASHBOARD */}
         <Route path="/dashboard" element={<DashboardLayout />}>
