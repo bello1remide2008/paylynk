@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
 import crypto from "crypto";
-import bcrypt from "bcryptjs";
+
 
 
 // ========================
@@ -352,6 +352,80 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Password reset successful",
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// =====================================
+// FORGOT PASSWORD
+// =====================================
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // CHECK USER
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // GENERATE TOKEN
+    const resetToken = crypto
+      .randomBytes(32)
+      .toString("hex");
+
+    // HASH TOKEN
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // SAVE TOKEN
+    user.resetPasswordToken = hashedToken;
+
+    // EXPIRES IN 15 MINUTES
+    user.resetPasswordExpire =
+      Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    // RESET URL
+    const resetUrl =
+      `http://paylynkds.com/reset-password/${resetToken}`;
+
+    // EMAIL MESSAGE
+    const message = `
+You requested a password reset.
+
+Click the link below:
+
+${resetUrl}
+
+This link expires in 15 minutes.
+`;
+
+    // SEND EMAIL
+    await sendEmail(
+      user.email,
+      "Password Reset",
+      message
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Reset email sent",
     });
 
   } catch (error) {
