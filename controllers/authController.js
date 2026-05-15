@@ -317,62 +317,41 @@ export const resendOtp = async (req, res) => {
 // =============================
 // FORGOT PASSWORD
 // =============================
-export const forgotPassword = async (req, res) => {
+// RESET PASSWORD
+export const resetPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { token } = req.params;
+    const { password } = req.body;
 
-    // CHECK EMAIL
-    const user = await User.findOne({ email });
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        message: "User not found",
+        message: "Invalid or expired token",
       });
     }
 
-    // GENERATE TOKEN
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // 🔥 JUST SET PASSWORD
+    user.password = password;
 
-    // HASH TOKEN
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    // SAVE TOKEN
-    user.resetPasswordToken = hashedToken;
-
-    // EXPIRE IN 15 MINUTES
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+    // CLEAR RESET FIELDS
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
 
     await user.save();
 
-    // RESET URL
-    const resetUrl =
-      `https://yourfrontend.com/reset-password/${resetToken}`;
-
-    // EMAIL MESSAGE
-    const message = `
-      You requested for password reset.
-
-      Click the link below:
-
-      ${resetUrl}
-
-      This link expires in 15 minutes.
-    `;
-
-    // SEND EMAIL
-    await sendEmail(
-      user.email,
-      "Password Reset",
-      message
-    );
-
     res.status(200).json({
       success: true,
-      message: "Reset email sent",
+      message: "Password reset successful",
     });
 
   } catch (error) {
