@@ -94,7 +94,7 @@ function App() {
             <Route path="success" element={<Success />} /> 
             <Route path="otp" element={<Otp />} />
 
-        </Route>
+        </Routes>
 
         {/* 🔥 ADMIN ROUTES (SEPARATE) */}
         <Route
