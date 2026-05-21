@@ -7,7 +7,7 @@ const SelectRecipient = ({ onSelect }) => {
 
 
   useEffect(() => {
-  fetch("https://paylynk-1.onrender.com/api/users", {
+  fetch("https://paylynk-1.onrender.com/api/admin/users", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
