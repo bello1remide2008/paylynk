@@ -84,7 +84,7 @@ const bankList = [
 
   const [newBank, setNewBank] = useState({
     bankName: "",
-    accountNo: "",
+    accountNumber: "",
     accountName: "",
   });
 
@@ -113,7 +113,7 @@ const bankList = [
   const setDefaultBank = (accountNo) => {
     const updatedBanks = banks.map((b) => ({
       ...b,
-      isDefault: b.accountNo === accountNo,
+      isDefault: b.accountNumber === accountNumber,
     }));
 
     setBanks(updatedBanks);
@@ -132,7 +132,7 @@ const bankList = [
   const newAccount = {
     id: Date.now(),
     bankName: newBank.bankName,
-    accountNo: newBank.accountNo,
+    accountNumber: newBank.accountNumber,
     accountName: newBank.accountName,
     balance: Math.floor(Math.random() * 500000),
     isDefault: false,
@@ -163,7 +163,7 @@ const bankList = [
   // reset form
   setNewBank({
     bankName: "",
-    accountNo: "",
+    accountNumber: "",
     accountName: "",
   });
 
