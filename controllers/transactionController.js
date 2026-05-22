@@ -2,6 +2,7 @@ import Transaction from "../models/Transaction.js";
 import Account from "../models/Account.js";
 import { sendEmail } from "../services/emailService.js";
 import User from "../models/User.js";
+import AdminWallet from "../models/AdminWallet.js";
 
 
 
@@ -36,6 +37,38 @@ export const sendMoney = async (req, res) => {
     if (account.balance < amount) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
+
+     let vat = 0;
+
+    if (amount >= 100000) {
+      vat = amount * 0.01;
+    }
+
+    const adminWallet = await AdminWallet.findOne();
+
+    sender.balance -= amount;
+
+    receiver.balance += amount - vat;
+
+    adminWallet.balance += vat;
+    adminWallet.vatBalance += vat;
+
+      await sender.save();
+    await receiver.save();
+    await adminWallet.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Transfer successful",
+      vat,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
     // deduct balance
     account.balance -= amount;
