@@ -120,6 +120,11 @@ const bankList = [
 
     const defaultBank = updatedBanks.find((b) => b.isDefault);
     localStorage.setItem("defaultBank", JSON.stringify(defaultBank));
+     localStorage.setItem(
+    "activeAccount",
+    JSON.stringify(defaultBank)
+  );
+
 
     alert("Default bank updated!");
     navigate("/dashboard");
@@ -132,10 +137,10 @@ const bankList = [
   const newAccount = {
     id: Date.now(),
     bankName: newBank.bankName,
-    accountNumber: newBank.accountNumber,
+    accountNumber: newBank.accountNo,
     accountName: newBank.accountName,
     balance: Math.floor(Math.random() * 500000),
-    isDefault: false,
+    isDefault: existing.length === 0,
   };
 
   // existing accounts
