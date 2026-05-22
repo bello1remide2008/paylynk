@@ -15,6 +15,7 @@ import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 
 import DashboardLayout from "./DashboardLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./Dashboard";
 import Settings from "./Settings";
 import Notification from "./Notification";
@@ -68,7 +69,11 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* DASHBOARD LAYOUT (NESTED ROUTES FIX) */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+       <Route path="/dashboard" element={
+          <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+          }>
           <Route index element={<Dashboard />} />
           <Route path="balance-card" element={<BalanceCard />} />
           <Route path="settings" element={<Settings />} />
