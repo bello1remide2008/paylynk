@@ -10,6 +10,9 @@ const [recent, setRecent] = useState([]);
   const [data, setData] = useState(null);
 
   const token = localStorage.getItem("adminToken");
+  
+  const accounts =
+  JSON.parse(localStorage.getItem("epay_accounts")) || [];
 
   const fetchProfile = async (userId = id) => {
   if (!userId) {
