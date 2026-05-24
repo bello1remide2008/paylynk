@@ -143,6 +143,25 @@ const bankList = [
     isDefault: existing.length === 0,
   };
 
+      // 🔥 SAVE TO BACKEND
+    const res = await fetch(
+      "https://paylynk-1.onrender.com/api/account/connect",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.success) {
+      return alert(data.message);
+    }
+
   // existing accounts
   const existing =
     JSON.parse(localStorage.getItem("epay_accounts")) || [];
