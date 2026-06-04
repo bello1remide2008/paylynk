@@ -12,6 +12,13 @@ const BankCards = () => {
   const [activeTab, setActiveTab] = useState("bank");
   const [filteredBanks, setFilteredBanks] = useState([]);
 
+  const token = localStorage.getItem("token");
+  const payload = {
+  bankName: newBank.bankName,
+  accountNumber: newBank.accountNo,
+  accountName: newBank.accountName,
+};
+
   // ✅ BANK LIST (for search)
 const bankList = [
   "Access Bank",
@@ -131,8 +138,12 @@ const bankList = [
   };
 
   // ================= BANK =================
-   const handleLinkBank = (e) => {
+   const handleLinkBank = async  (e) => {
   e.preventDefault();
+
+       const existing =
+    JSON.parse(localStorage.getItem("epay_accounts")) || [];
+
 
   const newAccount = {
     id: Date.now(),
@@ -145,7 +156,7 @@ const bankList = [
 
       // 🔥 SAVE TO BACKEND
     const res = await fetch(
-      "https://paylynk-1.onrender.com/api/account/connect",
+      "https://paylynk-1.onrender.com/api/accounts/connect",
       {
         method: "POST",
         headers: {
@@ -163,8 +174,6 @@ const bankList = [
     }
 
   // existing accounts
-  const existing =
-    JSON.parse(localStorage.getItem("epay_accounts")) || [];
 
   // updated accounts
   const updatedAccounts = [...existing, newAccount];
