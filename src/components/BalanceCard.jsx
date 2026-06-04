@@ -31,6 +31,34 @@ const BalanceCard = ({
   } catch (err) {
     console.error("Invalid userInfo:", err);
   }
+  useEffect(() => {
+  const storedAccounts =
+    JSON.parse(
+      localStorage.getItem("epay_accounts")
+    ) || [];
+
+  setAccounts(storedAccounts);
+
+  const active =
+    JSON.parse(
+      localStorage.getItem("activeAccount")
+    );
+
+  if (active) {
+    setActiveAccount(active);
+  } else {
+    const defaultAccount =
+      storedAccounts.find(
+        (acc) => acc.isDefault
+      );
+
+    setActiveAccount(
+      defaultAccount ||
+      storedAccounts[0] ||
+      null
+    );
+  }
+}, []);
 
   // ✅ TOGGLE BALANCE
   const toggleBalance = () => {
@@ -78,31 +106,34 @@ const BalanceCard = ({
   };
 
   // ✅ SET DEFAULT ACCOUNT
-  const setDefault = (accountNumber) => {
-    const updated = accounts.map((acc) => ({
-      ...acc,
-      isDefault:
-        acc.accountNumber === accountNumber,
-    }));
+const setDefault = (accountNumber) => {
+  const updated = accounts.map((acc) => ({
+    ...acc,
+    isDefault:
+      acc.accountNumber === accountNumber,
+  }));
 
-    setAccounts(updated);
+  setAccounts(updated);
 
-    localStorage.setItem(
-      "epay_accounts",
-      JSON.stringify(updated)
-    );
+  localStorage.setItem(
+    "epay_accounts",
+    JSON.stringify(updated)
+  );
 
-    setActiveAccount(
-      updated.find((acc) => acc.isDefault)
-    );
-  };
+  const defaultAccount =
+    updated.find((acc) => acc.isDefault);
+
+  setActiveAccount(defaultAccount);
+
+  localStorage.setItem(
+    "activeAccount",
+    JSON.stringify(defaultAccount)
+  );
+};
 
   // ✅ TOTAL BALANCE
-  const totalBalance = accounts.reduce(
-    (sum, acc) =>
-      sum + Number(acc.balance || 0),
-    0
-  );
+  const totalBalance =
+  Number(activeAccount?.balance || 0);
 
   return (
     <div className="bg-gradient-to-r from-[#0D1537] to-[#253C9D] text-white rounded-2xl p-6 mb-6 shadow-lg">
@@ -190,9 +221,14 @@ const BalanceCard = ({
 
             <div
               key={index}
-              onClick={() =>
-                setActiveAccount(acc)
-              }
+             onClick={() => {
+  setActiveAccount(acc);
+
+  localStorage.setItem(
+    "activeAccount",
+    JSON.stringify(acc)
+  );
+}}
               className={`min-w-[280px] p-5 rounded-2xl snap-center cursor-pointer transition duration-300 ${
                 activeAccount?.accountNumber ===
                 acc.accountNumber
@@ -271,18 +307,17 @@ const BalanceCard = ({
                   Default
                 </button>
 
-                {/* DELETE */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteAccount(
-                      acc.accountNumber
-                    );
-                  }}
-                  className="bg-red-500 px-3 py-1 rounded text-xs"
-                >
-                  <FaTrash />
-                </button>
+                
+            <button
+  onClick={(e) => {
+    e.stopPropagation();
+
+    navigate("/dashboard/bank-cards");
+  }}
+  className="bg-orange-500 px-3 py-1 rounded text-xs"
+>
+  Manage
+</button>
 
               </div>
 
