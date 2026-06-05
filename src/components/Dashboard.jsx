@@ -40,10 +40,29 @@ const Dashboard = () => {
     setTransactions(tx);
 
     // NOTIFICATIONS
+     const loadNotifications = () => {
     const storedNotifications =
       JSON.parse(localStorage.getItem("epay_notifications")) || [];
 
     setNotifications(storedNotifications);
+  };
+
+  loadNotifications();
+
+  window.addEventListener(
+    "notificationsUpdated",
+    loadNotifications
+  );
+
+  return () => {
+    window.removeEventListener(
+      "notificationsUpdated",
+      loadNotifications
+    );
+  };
+    const unreadCount = notifications.filter(
+  (n) => !n.read
+).length;
 
     // ACCOUNTS
     const savedAccounts =
@@ -83,9 +102,9 @@ const Dashboard = () => {
           >
             <Bell className="w-6 h-6 text-gray-700" />
 
-            {notifications.length > 0 && (
+            {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
-                {notifications.length}
+                {unreadCount}
               </span>
             )}
           </button>
