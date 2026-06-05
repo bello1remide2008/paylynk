@@ -24,7 +24,9 @@ const Notifications = () => {
     localStorage.setItem("epay_unread_count", unread.toString());
 
     // CRITICAL: This tells the Dashboard to update its Bell icon count!
-    window.dispatchEvent(new Event("storage"));
+    window.dispatchEvent(
+  new CustomEvent("notificationsUpdated")
+);
   }, [notifications]);
 
   const clearAllNotifications = () => {
