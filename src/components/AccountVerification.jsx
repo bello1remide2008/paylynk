@@ -60,13 +60,28 @@ const AccountVerification = () => {
       // ⚠️ MOCK RESPONSE FOR NOW
       // Replace later with Paystack API
 
-      setTimeout(() => {
-        setAccountName("John Doe");
+     const res = await fetch(
+  "http://localhost:5000/api/paystack/resolve-account",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      accountNumber,
+      bankCode: selectedBank.code,
+    }),
+  }
+);
 
-        setStep(2);
+const data = await res.json();
 
-        setLoading(false);
-      }, 1500);
+if (!res.ok) {
+  throw new Error(data.message);
+}
+
+setAccountName(data.accountName);
+setStep(2);
 
     } catch (err) {
       setLoading(false);
