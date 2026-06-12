@@ -44,6 +44,26 @@ const userSchema = new mongoose.Schema(
 otpExpires: {
   type: Date,
 },
+    bvn: {
+  type: String,
+},
+
+bvnVerified: {
+  type: Boolean,
+  default: false,
+},
+
+paystackCustomerCode: {
+  type: String,
+},
+
+virtualAccountNumber: {
+  type: String,
+},
+
+virtualAccountBank: {
+  type: String,
+},
   
   profileImage: {
   type: String,
