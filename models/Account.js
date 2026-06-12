@@ -26,6 +26,13 @@ const accountSchema = new mongoose.Schema(
     paystackAccountId: {
       type: String, 
     },
+    bankCode: {
+  type: String,
+},
+
+recipientCode: {
+  type: String,
+},
 
     balance: {
       type: Number,
