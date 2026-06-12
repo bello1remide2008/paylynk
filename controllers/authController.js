@@ -44,7 +44,14 @@ export const registerInit = async (req, res, ) => {
       phone,
       isVerified: false,
     });
-await createPaystackCustomer(user._id);
+try {
+  await createPaystackCustomer(user._id);
+} catch (error) {
+  console.error(
+    "Paystack customer creation failed:",
+    error.response?.data || error.message
+  );
+}
     // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
