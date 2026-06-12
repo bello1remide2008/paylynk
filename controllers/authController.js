@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
+import {createPaystackCustomer} from "./customerController.js";
 import crypto from "crypto";
 
 
@@ -43,7 +44,7 @@ export const registerInit = async (req, res, ) => {
       phone,
       isVerified: false,
     });
-
+await createPaystackCustomer(user._id);
     // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
