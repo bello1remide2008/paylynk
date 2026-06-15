@@ -2,6 +2,10 @@ import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
 import {createPaystackCustomer} from "./customerController.js";
+import {
+  createPaystackCustomer,
+  createDedicatedAccount,
+} from "../services/paystackService.js";
 import crypto from "crypto";
 
 
@@ -46,6 +50,7 @@ export const registerInit = async (req, res, ) => {
     });
 try {
   await createPaystackCustomer(user._id);
+   await createDedicatedAccount(user._id);
 } catch (error) {
   console.error(
     "Paystack customer creation failed:",
