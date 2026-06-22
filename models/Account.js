@@ -29,6 +29,19 @@ const accountSchema = new mongoose.Schema(
     bankCode: {
   type: String,
 },
+    institutionId: {
+  type: String,
+},
+
+provider: {
+  type: String,
+  default: "OnePipe",
+},
+
+linked: {
+  type: Boolean,
+  default: true,
+},
 
 recipientCode: {
   type: String,
