@@ -3,7 +3,6 @@ import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
 import {createPaystackCustomer} from "./customerController.js";
 import {
-  createPaystackCustomer,
   createDedicatedAccount,
 } from "../services/paystackService.js";
 import crypto from "crypto";
