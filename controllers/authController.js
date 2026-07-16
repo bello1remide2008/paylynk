@@ -227,6 +227,11 @@ export const loginUser = async (req, res) => {
         message: "Verify your account first",
       });
     }
+     user.isOnline = true;
+user.lastSeen = new Date();
+
+await user.save();
+    
 
     // 🔥 GENERATE TOKEN
     const token = generateToken(user._id);
@@ -246,7 +251,8 @@ export const loginUser = async (req, res) => {
         role: user.role,
         profileImage: user.profileImage,
       },
-    });
+     
+    
 
   } catch (error) {
     console.error("LOGIN ERROR:", error);
@@ -254,6 +260,24 @@ export const loginUser = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error",
+    });
+  }
+};
+export const logoutUser = async (req, res) => {
+  try {
+    req.user.isOnline = false;
+    req.user.lastSeen = new Date();
+
+    await req.user.save();
+
+    res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
     });
   }
 };
