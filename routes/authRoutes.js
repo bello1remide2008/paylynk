@@ -17,17 +17,17 @@ const router = express.Router();
  */
 
 // Register user + send email OTP
-router.post("/register-init", registerInit);
+router.post("/register-init", protect,  registerInit);
 
 // Login user
-router.post("/login", loginUser);
+router.post("/login", protect,  loginUser);
 
 // Verify OTP (email-based)
-router.post("/verify-otp", verifyOtp);
-router.post("/resend-otp", resendOtp);
-router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp", protect,  verifyOtp);
+router.post("/resend-otp",  protect, resendOtp);
+router.post("/forgot-password", protect, forgotPassword);
 
-router.put("/reset-password/:token", resetPassword);
-router.post("/logout", logoutUser);
+router.put("/reset-password/:token", protect,  resetPassword);
+router.post("/logout", protect,  logoutUser);
 
 export default router;
