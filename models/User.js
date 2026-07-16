@@ -36,7 +36,22 @@ const userSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false,
-    },
+    },isOnline: {
+  type: Boolean,
+  default: false,
+},
+
+lastSeen: {
+  type: Date,
+},
+    isOnline: {
+  type: Boolean,
+  default: false,
+},
+
+lastSeen: {
+  type: Date,
+},
  otp: {
   type: String,
 },
