@@ -154,6 +154,12 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
         {/* CONTINUE */}
         <button
           onClick={() => {
+            await fetch("/api/auth/logout", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
             localStorage.removeItem("user");
             setShowLogoutModal(false);
             navigate("/login");
