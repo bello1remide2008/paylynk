@@ -56,9 +56,31 @@ export const getUserDetails = async (req, res) => {
 
 export const getAdminStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const totalAccounts = await Account.countDocuments();
-    const totalTransactions = await Transaction.countDocuments();
+    const totalUsers =
+await User.countDocuments();
+
+const totalLinkedAccounts =
+await Account.countDocuments({
+    linked: true,
+});
+
+const totalTransactions =
+await Transaction.countDocuments();
+
+const activeSessions =
+await User.countDocuments({
+    isOnline: true,
+});
+
+const pendingVerifications =
+await User.countDocuments({
+    verificationStatus: "pending",
+});
+
+const failedTransactions =
+await Transaction.countDocuments({
+    status: "failed",
+});
 
     const last24Hours = new Date(
   Date.now() - 24 * 60 * 60 * 1000
