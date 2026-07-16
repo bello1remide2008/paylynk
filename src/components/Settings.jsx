@@ -81,7 +81,8 @@ const handleLogout = async () => {
     );
   } catch (error) {
     console.error("Logout failed:", error);
-  }
+  }finally {
+    localStorage.clear();
 
   // Clear local storage
   localStorage.removeItem("token");
