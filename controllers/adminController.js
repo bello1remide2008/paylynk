@@ -82,9 +82,7 @@ await Transaction.countDocuments({
     status: "failed",
 });
 
-    const last24Hours = new Date(
-  Date.now() - 24 * 60 * 60 * 1000
-);
+ 
 
 const recentUsers = await User.find({
   createdAt: { $gte: last24Hours },
@@ -98,12 +96,15 @@ const recentUsers = await User.find({
       .limit(5);
 
     res.json({
-      totalUsers,
-      totalAccounts,
-      totalTransactions,
-      recentUsers,
-      recentTransactions,
-    });
+    totalUsers,
+    totalLinkedAccounts,
+    totalTransactions,
+    activeSessions,
+    pendingVerifications,
+    failedTransactions,
+    recentUsers,
+    recentTransactions,
+});
 
   } catch (error) {
     res.status(500).json({ message: error.message });
