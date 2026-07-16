@@ -21,6 +21,7 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
     phone: "",
     image: "",
   });
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -65,6 +66,33 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
       action: () => navigate("/dashboard/help-support"),
     },
   ];
+  const token = localStorage.getItem("token");
+
+const handleLogout = async () => {
+  try {
+    await fetch(
+      "https://paylynk-1.onrender.com/api/auth/logout",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+
+  // Clear local storage
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("accountDetails");
+  localStorage.removeItem("activeAccount");
+
+  setShowLogoutModal(false);
+
+  navigate("/login");
+};
 
   return (
     <div className="p-4">
@@ -144,31 +172,13 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
       <div className="flex gap-3">
         
         {/* CANCEL */}
-        <button
-          onClick={() => setShowLogoutModal(false)}
-          className="flex-1 bg-gray-200 py-2 rounded-lg"
-        >
-          Cancel
-        </button>
-
-        {/* CONTINUE */}
-        <button
-          onClick={() => {
-            await fetch("https://paylynk-1.onrender.com/api/auth/logout", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
-            localStorage.removeItem("user");
-            setShowLogoutModal(false);
-            navigate("/login");
-          }}
-          className="flex-1 bg-red-500 text-white py-2 rounded-lg"
-        >
-          Continue
-        </button>
-
+      
+ <button
+  onClick={handleLogout}
+  className="flex-1 bg-red-500 text-white py-2 rounded-lg"
+>
+  Continue
+</button>
       </div>
     </div>
 
