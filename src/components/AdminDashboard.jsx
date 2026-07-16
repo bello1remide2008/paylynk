@@ -112,16 +112,65 @@ const AdminDashboard = () => {
       </div>
 
       {/* 📊 STATS */}
-      <div className="flex justify-center gap-10 mt-10">
-  {loading ? (
-    <p>Loading...</p>
-  ) : (
-    <>
-      <div>Total Users: {stats.totalUsers}</div>
-      <div>Total Accounts: {stats.totalAccounts}</div>
-      <div>Total Transactions: {stats.totalTransactions}</div>
-    </>
-  )}
+     <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">Total Users</h3>
+<p className="text-3xl font-bold">
+{stats.totalUsers}
+</p>
+</div>
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">
+Linked Accounts
+</h3>
+
+<p className="text-3xl font-bold">
+{stats.totalLinkedAccounts}
+</p>
+</div>
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">
+Transactions
+</h3>
+
+<p className="text-3xl font-bold">
+{stats.totalTransactions}
+</p>
+</div>
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">
+Active Sessions
+</h3>
+
+<p className="text-3xl font-bold text-green-600">
+{stats.activeSessions}
+</p>
+</div>
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">
+Pending Verification
+</h3>
+
+<p className="text-3xl font-bold text-yellow-500">
+{stats.pendingVerifications}
+</p>
+</div>
+
+<div className="bg-white rounded-xl shadow p-6">
+<h3 className="text-gray-500">
+Failed Transactions
+</h3>
+
+<p className="text-3xl font-bold text-red-500">
+{stats.failedTransactions}
+</p>
+</div>
+
 </div>
 
       {/* 👤 RECENT USERS */}
