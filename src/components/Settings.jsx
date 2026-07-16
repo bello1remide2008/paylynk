@@ -154,7 +154,7 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
         {/* CONTINUE */}
         <button
           onClick={() => {
-            await fetch("/api/auth/logout", {
+            await fetch("https://paylynk-1.onrender.com/api/auth/logout", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${token}`,
