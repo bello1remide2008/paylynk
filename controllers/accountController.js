@@ -22,6 +22,14 @@ export const sendMoney = async (req, res) => {
     senderAccount.balance -= amount;
     await senderAccount.save();
 
+    await logActivity({
+  userId: req.user._id,
+  title: "Money Transfer",
+  description: `${req.user.name} transferred ₦${amount} to ${receiverName}.`,
+  type: "transaction",
+  icon: "💸",
+});
+
     // 🔻 save transaction
     const tx = await Transaction.create({
       userId: senderAccount.userId,
@@ -90,6 +98,13 @@ export const connectAccount = async (req, res) => {
         </div>
       `,
     });
+    await logActivity({
+  userId: req.user._id,
+  title: "Bank Linked",
+  description: `${req.user.name} linked ${bankName}.`,
+  type: "bank",
+  icon: "🏦",
+});
 
     // ✅ response
     res.status(201).json({
