@@ -228,6 +228,14 @@ user.lastSeen = new Date();
 
 await user.save();
     
+    await logActivity({
+  userId: user._id,
+  title: "User Login",
+  description: `${user.name} logged into PayLynk.`,
+  type: "login",
+  icon: "🔑",
+});
+    
 
     // 🔥 GENERATE TOKEN
     const token = generateToken(user._id);
@@ -265,6 +273,13 @@ export const logoutUser = async (req, res) => {
     req.user.lastSeen = new Date();
 
     await req.user.save();
+    await logActivity({
+  userId: req.user._id,
+  title: "User Logout",
+  description: `${req.user.name} logged out.`,
+  type: "logout",
+  icon: "🚪",
+});
 
     res.json({
       success: true,
