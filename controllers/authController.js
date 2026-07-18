@@ -1,10 +1,7 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
-import {createPaystackCustomer} from "./customerController.js";
-import {
-  createDedicatedAccount,
-} from "../services/paystackService.js";
+
 import crypto from "crypto";
 
 
@@ -47,15 +44,7 @@ export const registerInit = async (req, res, ) => {
       phone,
       isVerified: false,
     });
-try {
-  await createPaystackCustomer(user._id);
-   await createDedicatedAccount(user._id);
-} catch (error) {
-  console.error(
-    "Paystack customer creation failed:",
-    error.response?.data || error.message
-  );
-}
+
     // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -90,7 +79,13 @@ try {
     if (!user.otp || !user.otpExpires) {
   return res.status(400).json({ message: "OTP not found, request new one" });
 }
-
+  await logActivity({
+  userId: user._id,
+  title: "New Registration",
+  description: `${user.name} created an account.`,
+  type: "signup",
+  icon: "🟢",
+});
     res.json({
   success: true,
   message: "OTP sent to email",
@@ -100,6 +95,7 @@ try {
     console.error("Register Error:", error);
     res.status(500).json({ message: "Server error" });
   }
+
 };
 
 // ========================
