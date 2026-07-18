@@ -282,6 +282,13 @@ export const freezeAccount = async (req, res) => {
 
   account.isFrozen = true;
   await account.save();
+  await logActivity({
+  userId: req.user._id,
+  title: "Money Transfer",
+  description: `${req.user.name} transferred ₦${amount} to ${receiverName}.`,
+  type: "transaction",
+  icon: "💸",
+});
 
   res.json({ success: true, message: "Account frozen" });
 };
