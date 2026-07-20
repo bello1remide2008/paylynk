@@ -9,6 +9,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
    const adminToken = localStorage.getItem("adminToken");
+  const [activities, setActivities] = useState([]);
 
 
   
@@ -53,10 +54,23 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+    const activityRes = await fetch(
+  "https://paylynk-1.onrender.com/api/admin/activity",
+  {
+    headers: {
+      Authorization: `Bearer ${adminToken}`,
+    },
+  }
+);
 
   fetchStats();
 
 }, [navigate]);
+ 
+
+const activityData = await activityRes.json();
+
+setActivities(activityData.activities || []);
 
   // 🔹 Search user by phone
   const handleSearch = async () => {
@@ -174,44 +188,151 @@ Failed Transactions
 </div>
 
       {/* 👤 RECENT USERS */}
-   <div className="mt-10 p-4">
-  <h3 className="text-2xl font-bold text-center mb-6">
-    Recent Users
-  </h3>
+   <div className="grid lg:grid-cols-2 gap-6 mt-12">
 
-  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {stats.recentUsers?.map((user) => (
-      <div
-        key={user._id}
-        className="bg-white shadow rounded-xl p-4 border hover:shadow-lg transition"
+  {/* ================= RECENT ACTIVITY ================= */}
+
+  <div className="bg-white rounded-2xl shadow border p-6">
+
+    <div className="flex justify-between items-center mb-6">
+
+      <h2 className="text-xl font-bold">
+        Recent Activity
+      </h2>
+
+      <button
+        className="text-blue-600 text-sm"
       >
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-bold text-lg">
-            {user.name}
-          </h4>
+        View All
+      </button>
 
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-            Active
-          </span>
+    </div>
+
+    <div className="space-y-4 max-h-[550px] overflow-y-auto">
+
+      {activities.length > 0 ? (
+
+        activities.map((activity) => (
+
+          <div
+            key={activity._id}
+            className="flex items-start gap-4 border-b pb-4"
+          >
+
+            <div className="text-3xl">
+              {activity.icon}
+            </div>
+
+            <div className="flex-1">
+
+              <h3 className="font-semibold">
+
+                {activity.title}
+
+              </h3>
+
+              <p className="text-gray-500 text-sm">
+
+                {activity.description}
+
+              </p>
+
+              <p className="text-xs text-gray-400 mt-1">
+
+                {new Date(
+                  activity.createdAt
+                ).toLocaleString()}
+
+              </p>
+
+            </div>
+
+          </div>
+
+        ))
+
+      ) : (
+
+        <p className="text-gray-500">
+          No recent activities
+        </p>
+
+      )}
+
+    </div>
+
+  </div>
+
+  {/* ================= RECENT USERS ================= */}
+
+  <div className="bg-white rounded-2xl shadow border p-6">
+
+    <div className="flex justify-between items-center mb-6">
+
+      <h2 className="text-xl font-bold">
+
+        Recent Users
+
+      </h2>
+
+      <button
+        className="text-blue-600 text-sm"
+      >
+        View All
+      </button>
+
+    </div>
+
+    <div className="space-y-4">
+
+      {stats.recentUsers?.map((user) => (
+
+        <div
+          key={user._id}
+          className="flex justify-between items-center border-b pb-4"
+        >
+
+          <div>
+
+            <h3 className="font-semibold">
+
+              {user.name}
+
+            </h3>
+
+            <p className="text-sm text-gray-500">
+
+              {user.email}
+
+            </p>
+
+            <p className="text-sm text-gray-500">
+
+              {user.phone}
+
+            </p>
+
+          </div>
+
+          <button
+            onClick={() =>
+              navigate(`/admin/user/${user._id}`)
+            }
+            className="bg-black text-white px-4 py-2 rounded-lg"
+          >
+
+            View
+
+          </button>
+
         </div>
 
-        <p className="text-sm text-gray-600 mb-1">
-          📧 {user.email || "No email"}
-        </p>
+      ))}
 
-        <p className="text-sm text-gray-600">
-          📱 {user.phone || "No phone"}
-        </p>
+    </div>
 
-        <button
-          onClick={() => navigate(`/admin/user/${user._id}`)}
-          className="mt-4 w-full bg-black text-white py-2 rounded-lg"
-        >
-          View Profile
-        </button>
-      </div>
-    ))}
   </div>
+
 </div>
 
     </div>
