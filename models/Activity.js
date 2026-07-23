@@ -35,6 +35,11 @@ const activitySchema = new mongoose.Schema(
       type: String,
       default: "🟢",
     },
+    status: {
+      type: String,
+      enum: ["success", "failed", "pending"],
+      default: "success",
+    },
   },
   { timestamps: true }
 );
