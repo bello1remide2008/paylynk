@@ -22,47 +22,27 @@ const AdminDashboard = () => {
     return;
   }
 
-  const fetchStats = async () => {
+const fetchStats = async () => {
   try {
     setLoading(true);
 
-    // Dashboard Stats
-    const res = await fetch(
-      "https://paylynk-1.onrender.com/api/admin/stats",
-      {
+    const [statsRes, activityRes] = await Promise.all([
+      fetch("https://paylynk-1.onrender.com/api/admin/stats", {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
-      }
-    );
-
-    const data = await res.json();
-
-    if (
-      data.message === "Invalid token" ||
-      data.message === "No token"
-    ) {
-      localStorage.removeItem("adminToken");
-      navigate("/admin-login");
-      return;
-    }
-
-    setStats(data);
-
-    // ==========================
-    // Recent Activity
-    // ==========================
-    const activityRes = await fetch(
-      "https://paylynk-1.onrender.com/api/admin/activity",
-      {
+      }),
+      fetch("https://paylynk-1.onrender.com/api/admin/activity", {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
-      }
-    );
+      }),
+    ]);
 
+    const statsData = await statsRes.json();
     const activityData = await activityRes.json();
 
+    setStats(statsData);
     setActivities(activityData.activities || []);
 
   } catch (error) {
