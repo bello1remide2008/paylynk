@@ -23,45 +23,54 @@ const AdminDashboard = () => {
   }
 
   const fetchStats = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await fetch(
-        "https://paylynk-1.onrender.com/api/admin/stats",
-        {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        }
-      );
-
-      const data = await res.json();
-
-      if (
-        data.message === "Invalid token" ||
-        data.message === "No token"
-      ) {
-        localStorage.removeItem("adminToken");
-        navigate("/admin-login");
-        return;
+    // Dashboard Stats
+    const res = await fetch(
+      "https://paylynk-1.onrender.com/api/admin/stats",
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
       }
+    );
 
-      setStats(data);
+    const data = await res.json();
 
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+    if (
+      data.message === "Invalid token" ||
+      data.message === "No token"
+    ) {
+      localStorage.removeItem("adminToken");
+      navigate("/admin-login");
+      return;
     }
-  };
+
+    setStats(data);
+
+    // ==========================
+    // Recent Activity
+    // ==========================
     const activityRes = await fetch(
-  "https://paylynk-1.onrender.com/api/admin/activity",
-  {
-    headers: {
-      Authorization: `Bearer ${adminToken}`,
-    },
+      "https://paylynk-1.onrender.com/api/admin/activity",
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+
+    const activityData = await activityRes.json();
+
+    setActivities(activityData.activities || []);
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
-);
+};
 
   fetchStats();
 
