@@ -190,5 +190,8 @@ const handleLogout = async () => {
   );
 };
 
-export default Settings;
 };
+
+
+export default Settings;
+
