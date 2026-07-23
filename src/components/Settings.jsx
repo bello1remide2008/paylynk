@@ -13,7 +13,7 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 
-const Settings = () => {
+const Settings = async () => {
   const navigate = useNavigate();
 const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState({
