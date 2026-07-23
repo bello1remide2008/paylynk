@@ -66,7 +66,7 @@ const [showLogoutModal, setShowLogoutModal] = useState(false);
       action: () => navigate("/dashboard/help-support"),
     },
   ];
-  const token = localStorage.getItem("token");
+  
 
 const handleLogout = async () => {
   try {
