@@ -22,44 +22,58 @@ const AdminDashboard = () => {
     return;
   }
 
-const fetchStats = async () => {
-  try {
-    setLoading(true);
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
 
-    const [statsRes, activityRes] = await Promise.all([
-      fetch("https://paylynk-1.onrender.com/api/admin/stats", {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
-      }),
-      fetch("https://paylynk-1.onrender.com/api/admin/activity", {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
-      }),
-    ]);
+      const [statsRes, activityRes] = await Promise.all([
+        fetch(
+          "https://paylynk-1.onrender.com/api/admin/stats",
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        ),
 
-    const statsData = await statsRes.json();
-    const activityData = await activityRes.json();
+        fetch(
+          "https://paylynk-1.onrender.com/api/admin/activity",
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        ),
+      ]);
 
-    setStats(statsData);
-    setActivities(activityData.activities || []);
+      const statsData = await statsRes.json();
+      const activityData = await activityRes.json();
 
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Invalid token
+      if (
+        statsData.message === "Invalid token" ||
+        statsData.message === "No token"
+      ) {
+        localStorage.removeItem("adminToken");
+        navigate("/admin-login");
+        return;
+      }
+
+      setStats(statsData);
+      setActivities(activityData.activities || []);
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   fetchStats();
 
 }, [navigate]);
  
 
-const activityData = await activityRes.json();
-
-setActivities(activityData.activities || []);
 
   // 🔹 Search user by phone
   const handleSearch = async () => {
