@@ -191,4 +191,4 @@ const handleLogout = async () => {
 };
 
 export default Settings;
-
+};
