@@ -94,6 +94,49 @@ const recentUsers = await User.find({
     const recentTransactions = await Transaction.find()
       .sort({ createdAt: -1 })
       .limit(5);
+    const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const todaysUsers = await User.countDocuments({
+  createdAt: { $gte: today },
+});
+
+const todaysTransactions = await Transaction.countDocuments({
+  createdAt: { $gte: today },
+});
+
+const totalVolume = await Transaction.aggregate([
+  {
+    $match: {
+      status: "success",
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      total: {
+        $sum: "$amount",
+      },
+    },
+  },
+]);
+
+const revenue = await Transaction.aggregate([
+  {
+    $match: {
+      status: "success",
+      createdAt: { $gte: today },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      total: {
+        $sum: "$amount",
+      },
+    },
+  },
+]);
 
     res.json({
     totalUsers,
@@ -104,6 +147,14 @@ const recentUsers = await User.find({
     failedTransactions,
     recentUsers,
     recentTransactions,
+       todaysUsers,
+    todaysTransactions,
+
+    totalVolume:
+        totalVolume[0]?.total || 0,
+
+    todaysRevenue:
+        revenue[0]?.total || 0,
 });
 
   } catch (error) {
