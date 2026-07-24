@@ -337,6 +337,53 @@ Failed Transactions
   </div>
 
 </div>
+       <div className="mt-10">
+
+<h2 className="text-2xl font-bold mb-6">
+Statistics
+</h2>
+
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+
+<div className="bg-white rounded-xl p-5 shadow">
+<p className="text-gray-500">
+Today's Signups
+</p>
+<h3 className="text-3xl font-bold">
+{stats.todaysUsers}
+</h3>
+</div>
+
+<div className="bg-white rounded-xl p-5 shadow">
+<p className="text-gray-500">
+Today's Transactions
+</p>
+<h3 className="text-3xl font-bold">
+{stats.todaysTransactions}
+</h3>
+</div>
+
+<div className="bg-white rounded-xl p-5 shadow">
+<p className="text-gray-500">
+Today's Revenue
+</p>
+<h3 className="text-3xl font-bold">
+₦{stats.todaysRevenue?.toLocaleString()}
+</h3>
+</div>
+
+<div className="bg-white rounded-xl p-5 shadow">
+<p className="text-gray-500">
+Total Volume
+</p>
+<h3 className="text-3xl font-bold">
+₦{stats.totalVolume?.toLocaleString()}
+</h3>
+</div>
+
+</div>
+
+</div>
 
     </div>
   );
