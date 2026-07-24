@@ -144,7 +144,7 @@ Linked Accounts
 </h3>
 
 <p className="text-3xl font-bold">
-{stats.totalLinkedAccounts}
+{stats.totalAccounts}
 </p>
 </div>
 
