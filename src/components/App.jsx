@@ -40,6 +40,7 @@ import AdminSendOtp from "./AdminSendOtp";
 import AdminTransactions from "./AdminTransactions";
 import AdminUsers from "./AdminUsers";
 import AdminNavbar from "./AdminNavbar";
+import AdminAnalytics from "./components/AdminAnalytics";
 
 function App() {
   const location = useLocation();
@@ -103,6 +104,10 @@ function App() {
         <Route path="/admin/user/:id" element={<AdminTransactions />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/navbar" element={<AdminNavbar />} />
+        <Route
+  path="/admin/analytics"
+  element={<AdminAnalytics />}
+/>
       </Routes>
     </div>
   );
