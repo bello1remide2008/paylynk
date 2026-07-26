@@ -161,6 +161,348 @@ const revenue = await Transaction.aggregate([
     res.status(500).json({ message: error.message });
   }
 };
+
+import User from "../models/User.js";
+import Account from "../models/Account.js";
+import Transaction from "../models/Transaction.js";
+
+export const getAnalytics = async (req, res) => {
+  try {
+    // =========================
+    // DATE SETUP
+    // =========================
+
+    const now = new Date();
+
+    const currentYear = now.getFullYear();
+
+    const startOfYear = new Date(currentYear, 0, 1);
+
+    const sevenDaysAgo = new Date(
+      Date.now() - 7 * 24 * 60 * 60 * 1000
+    );
+
+    const startToday = new Date();
+    startToday.setHours(0, 0, 0, 0);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    // =========================
+    // DASHBOARD COUNTS
+    // =========================
+
+    const totalUsers = await User.countDocuments();
+
+    const verifiedUsers = await User.countDocuments({
+      isVerified: true,
+    });
+
+    const pendingUsers = await User.countDocuments({
+      isVerified: false,
+    });
+
+    const linkedAccounts = await Account.countDocuments();
+
+    const activeSessions = await User.countDocuments({
+      isOnline: true,
+    });
+
+    const successTransactions =
+      await Transaction.countDocuments({
+        status: "success",
+      });
+
+    const failedTransactions =
+      await Transaction.countDocuments({
+        status: "failed",
+      });
+
+    // =========================
+    // MONTHLY USERS
+    // =========================
+
+    const monthlyUsers = await User.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startOfYear,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $month: "$createdAt",
+          },
+          users: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    const formattedUsers = monthlyUsers.map((item) => ({
+      month: months[item._id - 1],
+      users: item.users,
+    }));
+
+    // =========================
+    // REVENUE TREND
+    // =========================
+
+    const revenueTrend = await Transaction.aggregate([
+      {
+        $match: {
+          status: "success",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $month: "$createdAt",
+          },
+          amount: {
+            $sum: "$amount",
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    const formattedRevenue = revenueTrend.map((item) => ({
+      month: months[item._id - 1],
+      amount: item.amount,
+    }));
+
+    // =========================
+    // LAST 7 DAYS TRANSACTIONS
+    // =========================
+
+    const transactionTrend =
+      await Transaction.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: sevenDaysAgo,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: "%d %b",
+                date: "$createdAt",
+              },
+            },
+            transactions: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $sort: {
+            _id: 1,
+          },
+        },
+      ]);
+
+    const formattedTransactions =
+      transactionTrend.map((item) => ({
+        day: item._id,
+        transactions: item.transactions,
+      }));
+
+    // =========================
+    // TODAY'S REVENUE
+    // =========================
+
+    const todaysRevenue =
+      await Transaction.aggregate([
+        {
+          $match: {
+            status: "success",
+            createdAt: {
+              $gte: startToday,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: "$amount",
+            },
+          },
+        },
+      ]);
+
+    // =========================
+    // TOTAL TRANSACTION VOLUME
+    // =========================
+
+    const totalVolume =
+      await Transaction.aggregate([
+        {
+          $match: {
+            status: "success",
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: "$amount",
+            },
+          },
+        },
+      ]);
+
+    // =========================
+    // AVERAGE TRANSACTION
+    // =========================
+
+    const averageTransaction =
+      await Transaction.aggregate([
+        {
+          $match: {
+            status: "success",
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            average: {
+              $avg: "$amount",
+            },
+          },
+        },
+      ]);
+
+    // =========================
+    // BIGGEST TRANSACTION
+    // =========================
+
+    const biggestTransaction =
+      await Transaction.findOne().sort({
+        amount: -1,
+      });
+
+    // =========================
+    // TOP USERS
+    // =========================
+
+    const topUsers =
+      await Transaction.aggregate([
+        {
+          $group: {
+            _id: "$userId",
+            total: {
+              $sum: "$amount",
+            },
+          },
+        },
+        {
+          $sort: {
+            total: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+      ]);
+
+    // =========================
+    // TOP BANKS
+    // =========================
+
+    const topBanks =
+      await Account.aggregate([
+        {
+          $group: {
+            _id: "$bankName",
+            accounts: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $sort: {
+            accounts: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+      ]);
+
+    // =========================
+    // RESPONSE
+    // =========================
+
+    res.status(200).json({
+      totalUsers,
+      verifiedUsers,
+      pendingUsers,
+      linkedAccounts,
+      activeSessions,
+      successTransactions,
+      failedTransactions,
+
+      monthlyUsers: formattedUsers,
+
+      transactionTrend:
+        formattedTransactions,
+
+      revenueTrend:
+        formattedRevenue,
+
+      todaysRevenue:
+        todaysRevenue[0]?.total || 0,
+
+      totalVolume:
+        totalVolume[0]?.total || 0,
+
+      averageTransaction:
+        averageTransaction[0]?.average || 0,
+
+      biggestTransaction,
+
+      topUsers,
+
+      topBanks,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
