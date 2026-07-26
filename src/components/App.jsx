@@ -40,7 +40,7 @@ import AdminSendOtp from "./AdminSendOtp";
 import AdminTransactions from "./AdminTransactions";
 import AdminUsers from "./AdminUsers";
 import AdminNavbar from "./AdminNavbar";
-import AdminAnalytics from "./components/AdminAnalytics";
+import AdminAnalytics from "./AdminAnalytics";
 
 function App() {
   const location = useLocation();
