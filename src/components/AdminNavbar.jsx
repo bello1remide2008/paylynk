@@ -26,6 +26,12 @@ const AdminNavbar = () => {
             <button onClick={() => navigate("/admin/users")}>Users</button>
             <button onClick={() => navigate(`/admin/user/${user._id}`)}>Profiles</button>
             <button onClick={() => navigate("/admin/send-otp")}>Send Emails</button>
+            <button
+  onClick={() => navigate("/admin/analytics")}
+  className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700"
+>
+  View Analytics
+</button>
           </div>
         </div>
       )}
