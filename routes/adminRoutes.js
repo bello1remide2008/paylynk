@@ -15,6 +15,7 @@ import {
 
 import { adminProtect } from "../middleware/adminMiddleware.js";
 import { sendAdminOtp } from "../controllers/adminController.js";
+import { getAnalytics } from "../controllers/adminController.js";
 
 const router = express.Router();
 
@@ -23,6 +24,11 @@ router.get("/users", adminProtect, getUsers);
 router.get("/users/:id", adminProtect, getUserDetails);
 
 router.get("/stats", adminProtect, getAdminStats);
+router.get(
+  "/analytics",
+  protectAdmin,
+  getAnalytics
+);
 
 router.get("/user/:id", adminProtect, getUserProfile);
 router.get("/search-user", adminProtect, async (req, res) => {
