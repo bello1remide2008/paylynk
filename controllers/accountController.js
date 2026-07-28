@@ -209,3 +209,47 @@ account
 });
 
 }
+export const getDashboardInsight = async (req, res) => {
+  try {
+
+    const userId = req.user._id;
+
+    const totalAccounts = await Account.countDocuments({
+      userId,
+    });
+
+    const transactions = await Transaction.find({
+      userId,
+    });
+
+    let income = 0;
+    let expense = 0;
+
+    transactions.forEach((trx) => {
+      if (trx.type === "credit") {
+        income += trx.amount;
+      }
+
+      if (trx.type === "debit") {
+        expense += trx.amount;
+      }
+    });
+
+    res.json({
+      success: true,
+
+      totalIncome: income,
+
+      totalExpense: expense,
+
+      totalTransactions: transactions.length,
+
+      totalAccounts,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
