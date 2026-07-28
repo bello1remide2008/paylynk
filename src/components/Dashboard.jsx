@@ -9,6 +9,8 @@ import {
 } from "react-icons/fa";
 import { Bell } from "lucide-react";
 import { useNavigate, Outlet } from "react-router-dom";
+import SpendingAnalytics from "./SpendingAnalytics";
+import InsightWidget from "./InsightWidget";
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
@@ -148,6 +150,7 @@ setAnalytics(analyticsData);
         />
 
         <InsightWidget insight={insight} />
+        import SpendingAnalytics from "./SpendingAnalytics";
 
         {/* PAYMENTS */}
         <div className="bg-white rounded-3xl p-6 shadow-lg w-full mb-6">
