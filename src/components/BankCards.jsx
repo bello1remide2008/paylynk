@@ -343,10 +343,10 @@ fetchAccounts();
               {banks.map((bank) => (
                 <div
                   key={bank.id}
-                  className="mb-4 p-4 border rounded-2xl flex justify-between"
+                  className=" bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-x"
                 >
-                  <div>
-                    <p className="font-bold text-sm">
+                  <div className="flex justify-between">
+                    <p className="font-bold text-xl">
                       {bank.bankName}
                       {bank.isDefault && (
                         <span className="text-green-500 ml-2 text-xs">
