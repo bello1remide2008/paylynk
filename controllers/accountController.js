@@ -170,3 +170,42 @@ export const setDefaultAccount = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const unlinkAccount = async (req, res) => {
+  try {
+
+    const account = await Account.findByIdAndUpdate(
+      req.params.id,
+      {
+        isActive: false,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json({
+      success: true,
+      message: "Account unlinked",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:error.message,
+    });
+  }
+};
+export const refreshAccount = async (req,res)=>{
+
+const account=await Account.findById(req.params.id);
+
+res.json({
+
+success:true,
+
+account
+
+});
+
+}
