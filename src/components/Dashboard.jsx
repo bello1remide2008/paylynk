@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [accounts, setAccounts] = useState([]);
   const [activeAccount, setActiveAccount] = useState(null);
   const [userName, setUserName] = useState("");
+  const [insight, setInsight] = useState({});
 
   const navigate = useNavigate();
 
@@ -26,6 +27,18 @@ const Dashboard = () => {
 
   // LOAD EVERYTHING
   useEffect(() => {
+    const res = await fetch(
+  "https://paylynk-1.onrender.com/api/accounts/dashboard-insight",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+const data = await res.json();
+
+setInsight(data);
     // USER
     const storedUser = JSON.parse(
       localStorage.getItem("userInfo")
@@ -119,6 +132,8 @@ const Dashboard = () => {
           setActiveAccount={setActiveAccount}
           setAccounts={setAccounts}
         />
+
+        <InsightWidget insight={insight} />
 
         {/* PAYMENTS */}
         <div className="bg-white rounded-3xl p-6 shadow-lg w-full mb-6">
