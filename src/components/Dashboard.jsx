@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState(null);
   const [userName, setUserName] = useState("");
   const [insight, setInsight] = useState({});
+  const [analytics,setAnalytics]=useState({});
 
   const navigate = useNavigate();
 
@@ -39,6 +40,19 @@ const Dashboard = () => {
 const data = await res.json();
 
 setInsight(data);
+    
+    const analyticsRes = await fetch(
+"https://paylynk-1.onrender.com/api/accounts/spending-analytics",
+{
+headers:{
+Authorization:`Bearer ${token}`
+}
+}
+);
+
+const analyticsData = await analyticsRes.json();
+
+setAnalytics(analyticsData);
     // USER
     const storedUser = JSON.parse(
       localStorage.getItem("userInfo")
