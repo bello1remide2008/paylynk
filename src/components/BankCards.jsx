@@ -142,13 +142,29 @@ console.log(err);
   };
 
   // ================= DEFAULT =================
-  const setDefaultBank = (accountNo) => {
-    const updatedBanks = banks.map((b) => ({
-      ...b,
-      isDefault: b.accountNumber === accountNumber,
-    }));
+ const setDefaultBank=async(id)=>{
 
-    setBanks(updatedBanks);
+await fetch(
+
+`https://paylynk-1.onrender.com/api/accounts/default/${id}`,
+
+{
+
+method:"PATCH",
+
+headers:{
+
+Authorization:`Bearer ${token}`
+
+}
+
+}
+
+);
+
+fetchAccounts();
+
+}
 
     const defaultBank = updatedBanks.find((b) => b.isDefault);
     localStorage.setItem("defaultBank", JSON.stringify(defaultBank));
