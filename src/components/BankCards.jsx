@@ -179,10 +179,19 @@ const bankList = [
   const updatedAccounts = [...existing, newAccount];
 
   // save to localStorage
-  localStorage.setItem(
-    "epay_accounts",
-    JSON.stringify(updatedAccounts)
+const fetchAccounts = async () => {
+  const res = await fetch(
+    "https://paylynk-1.onrender.com/api/accounts",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
+
+  const data = await res.json();
+  setBanks(data.accounts);
+};
 
   // update UI
   setBanks(updatedAccounts);
