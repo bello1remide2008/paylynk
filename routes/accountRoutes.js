@@ -8,6 +8,7 @@ import {
   unLinkAccount,
   refreshAccount,
   getDashboardInsight,
+  getSpendingAnalytics,
 } from "../controllers/accountController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -56,6 +57,12 @@ router.get(
     "/dashboard-insight",
     protect,
     getDashboardInsight
+);
+
+router.get(
+"/spending-analytics",
+protect,
+getSpendingAnalytics
 );
 
 export default router;
