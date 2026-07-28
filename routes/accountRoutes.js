@@ -7,6 +7,7 @@ import {
   sendMoney,
   unLinkAccount,
   refreshAccount,
+  getDashboardInsight,
 } from "../controllers/accountController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -50,6 +51,11 @@ router.get(
 "/refresh/:id",
 protect,
 refreshAccount
+);
+router.get(
+    "/dashboard-insight",
+    protect,
+    getDashboardInsight
 );
 
 export default router;
