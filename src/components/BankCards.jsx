@@ -65,19 +65,44 @@ const bankList = [
   "Paga"
 ];
 
- const [banks, setBanks] = useState(() => {
-  return (
-    JSON.parse(localStorage.getItem("epay_accounts")) || [
-      {
-        id: 1,
-        bankName: "Access Bank",
-        accountName: "Isaac Alfred",
-        accountNo: "0723456789",
-        isHardcoded: true,
-      },
-    ]
-  );
-});
+const [banks,setBanks]=useState([]);
+
+  useEffect(()=>{
+    const fetchAccounts = async () => {
+
+try{
+
+const res=await fetch(
+
+"https://paylynk-1.onrender.com/api/accounts",
+
+{
+
+headers:{
+
+Authorization:`Bearer ${token}`
+
+}
+
+}
+
+);
+
+const data=await res.json();
+
+setBanks(data.accounts);
+
+}
+
+catch(err){
+
+console.log(err);
+
+}
+
+};
+  });
+  
 
   const [cards, setCards] = useState([
     {
@@ -179,22 +204,7 @@ const bankList = [
   const updatedAccounts = [...existing, newAccount];
 
   // save to localStorage
-const fetchAccounts = async () => {
-  const res = await fetch(
-    "https://paylynk-1.onrender.com/api/accounts",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  const data = await res.json();
-  setBanks(data.accounts);
-};
-
-  // update UI
-  setBanks(updatedAccounts);
+await fetchAccounts();
 
   // close modal
   setShowBankModal(false);
@@ -212,18 +222,29 @@ const fetchAccounts = async () => {
   alert("Bank linked successfully!");
 }; 
 
-  const handleUnlinkBank = (accountNumber) => {
-  const updated = banks.filter(
-    (b) => b.accountNumber !== accountNumber
-  );
+  const handleUnlinkBank=async(id)=>{
 
-  setBanks(updated);
+await fetch(
 
-  localStorage.setItem(
-    "epay_accounts",
-    JSON.stringify(updated)
-  );
-};
+`https://paylynk-1.onrender.com/api/accounts/${id}`,
+
+{
+
+method:"DELETE",
+
+headers:{
+
+Authorization:`Bearer ${token}`
+
+}
+
+}
+
+);
+
+fetchAccounts();
+
+}
 
   // ================= CARD =================
   const handleAddCard = (e) => {
