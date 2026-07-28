@@ -5,6 +5,8 @@ import {
   getAccounts,
   setDefaultAccount,
   sendMoney,
+  unLinkAccount,
+  refreshAccount,
 } from "../controllers/accountController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -37,6 +39,17 @@ router.patch(
   "/default",
   protect,
   setDefaultAccount
+);
+router.delete(
+"/:id",
+protect,
+unlinkAccount
+);
+
+router.get(
+"/refresh/:id",
+protect,
+refreshAccount
 );
 
 export default router;
