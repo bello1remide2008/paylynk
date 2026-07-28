@@ -253,3 +253,64 @@ export const getDashboardInsight = async (req, res) => {
     });
   }
 };
+
+export const getSpendingAnalytics = async (req, res) => {
+  try {
+
+    const userId = req.user._id;
+
+    const transactions = await Transaction.find({
+      userId,
+      type: "debit",
+    });
+
+    const months = [
+      "Jan","Feb","Mar","Apr","May","Jun",
+      "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    const monthly = new Array(12).fill(0);
+
+    transactions.forEach((trx) => {
+
+      const month = new Date(trx.createdAt).getMonth();
+
+      monthly[month] += trx.amount;
+
+    });
+
+    const monthlyData = months.map((month,index)=>({
+      month,
+      amount: monthly[index],
+    }));
+
+    const totalSpent = monthly.reduce((a,b)=>a+b,0);
+
+    const averageSpent =
+      totalSpent / 12;
+
+    const highest =
+      monthly.indexOf(Math.max(...monthly));
+
+    res.json({
+
+      success:true,
+
+      monthlyData,
+
+      totalSpent,
+
+      averageSpent,
+
+      highestMonth: months[highest],
+
+    });
+
+  } catch(error){
+
+      res.status(500).json({
+        message:error.message,
+      });
+
+  }
+};
