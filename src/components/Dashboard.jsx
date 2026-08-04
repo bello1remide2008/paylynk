@@ -29,59 +29,79 @@ const Dashboard = () => {
   };
 
   // LOAD EVERYTHING
-  useEffect(() => {
-    const res = await fetch(
-  "https://paylynk-1.onrender.com/api/accounts/dashboard-insight",
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
+ useEffect(() => {
 
-const data = await res.json();
+  const fetchDashboardData = async () => {
+    try {
 
-setInsight(data);
-    
-    const analyticsRes = await fetch(
-"https://paylynk-1.onrender.com/api/accounts/spending-analytics",
-{
-headers:{
-Authorization:`Bearer ${token}`
-}
-}
-);
+      // ================= DASHBOARD INSIGHT =================
+      const res = await fetch(
+        "https://paylynk-1.onrender.com/api/accounts/dashboard-insight",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-const analyticsData = await analyticsRes.json();
+      const insightData = await res.json();
+      setInsight(insightData);
 
-setAnalytics(analyticsData);
-    // USER
-    const storedUser = JSON.parse(
-      localStorage.getItem("userInfo")
-    );
+      // ================= SPENDING ANALYTICS =================
+      const analyticsRes = await fetch(
+        "https://paylynk-1.onrender.com/api/accounts/spending-analytics",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (storedUser) {
-      setUserName(storedUser.name || "");
+      const analyticsData = await analyticsRes.json();
+      setAnalytics(analyticsData);
+
+      // ================= USER =================
+      const storedUser = JSON.parse(
+        localStorage.getItem("userInfo")
+      );
+
+      if (storedUser) {
+        setUserName(storedUser.name || "");
+      }
+
+      // ================= TRANSACTIONS =================
+      const tx = getTransactions();
+      setTransactions(tx);
+
+      // ================= NOTIFICATIONS =================
+      const storedNotifications =
+        JSON.parse(
+          localStorage.getItem("epay_notifications")
+        ) || [];
+
+      setNotifications(storedNotifications);
+
+    } catch (error) {
+      console.error("Dashboard Error:", error);
     }
+  };
 
-    // TRANSACTIONS
-    const tx = getTransactions();
-    setTransactions(tx);
+  fetchDashboardData();
 
-    // NOTIFICATIONS
-     const loadNotifications = () => {
+  const loadNotifications = () => {
     const storedNotifications =
-      JSON.parse(localStorage.getItem("epay_notifications")) || [];
+      JSON.parse(
+        localStorage.getItem("epay_notifications")
+      ) || [];
 
     setNotifications(storedNotifications);
   };
-
-  loadNotifications();
 
   window.addEventListener(
     "notificationsUpdated",
     loadNotifications
   );
+
 
   return () => {
     window.removeEventListener(
