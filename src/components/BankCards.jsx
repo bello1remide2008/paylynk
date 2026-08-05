@@ -287,7 +287,7 @@ fetchAccounts();
       expiry: "",
       cvv: "",
     });
-  };
+  
 
   // ================= UI =================
   return (
@@ -467,5 +467,6 @@ fetchAccounts();
     </div>
   );
 };
+
 
 export default BankCards;
