@@ -30,12 +30,10 @@ const Dashboard = () => {
 
   // LOAD EVERYTHING
  useEffect(() => {
-
   const fetchDashboardData = async () => {
     try {
-
       // ================= DASHBOARD INSIGHT =================
-      const res = await fetch(
+      const insightRes = await fetch(
         "https://paylynk-1.onrender.com/api/accounts/dashboard-insight",
         {
           headers: {
@@ -44,7 +42,7 @@ const Dashboard = () => {
         }
       );
 
-      const insightData = await res.json();
+      const insightData = await insightRes.json();
       setInsight(insightData);
 
       // ================= SPENDING ANALYTICS =================
@@ -81,6 +79,23 @@ const Dashboard = () => {
 
       setNotifications(storedNotifications);
 
+      // ================= LINKED ACCOUNTS =================
+      const savedAccounts =
+        JSON.parse(
+          localStorage.getItem("epay_accounts")
+        ) || [];
+
+      setAccounts(savedAccounts);
+
+      if (savedAccounts.length > 0) {
+        const defaultAcc = savedAccounts.find(
+          (acc) => acc.isDefault
+        );
+
+        setActiveAccount(
+          defaultAcc || savedAccounts[0]
+        );
+      }
     } catch (error) {
       console.error("Dashboard Error:", error);
     }
@@ -88,6 +103,7 @@ const Dashboard = () => {
 
   fetchDashboardData();
 
+  // ================= NOTIFICATION LISTENER =================
   const loadNotifications = () => {
     const storedNotifications =
       JSON.parse(
@@ -102,31 +118,28 @@ const Dashboard = () => {
     loadNotifications
   );
 
-
   return () => {
     window.removeEventListener(
       "notificationsUpdated",
       loadNotifications
     );
   };
-    const unreadCount = notifications.filter(
-  (n) => !n.read
+}, []);
+  const unreadCount = notifications.filter(
+  (notification) => !notification.read
 ).length;
+  const savedAccounts =
+JSON.parse(localStorage.getItem("epay_accounts")) || [];
 
-    // ACCOUNTS
-    const savedAccounts =
-      JSON.parse(localStorage.getItem("epay_accounts")) || [];
+setAccounts(savedAccounts);
 
-    setAccounts(savedAccounts);
+if (savedAccounts.length > 0) {
+  const defaultAcc = savedAccounts.find(
+    (acc) => acc.isDefault
+  );
 
-    if (savedAccounts.length > 0) {
-      const defaultAcc = savedAccounts.find(
-        (acc) => acc.isDefault
-      );
-
-      setActiveAccount(defaultAcc || savedAccounts[0]);
-    }
-  }, []);
+  setActiveAccount(defaultAcc || savedAccounts[0]);
+}
 
   return (
     <div className="min-h-screen bg-gray-100">
