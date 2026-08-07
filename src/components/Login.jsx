@@ -88,6 +88,7 @@ const Login = () => {
         "epay_user_name",
         data.user.name
       );
+      navigate("/dashboard");
 
       // NOTIFICATION
       addNotification(
@@ -100,7 +101,7 @@ const Login = () => {
       setShowBiometric(true);
 
       // GO TO DASHBOARD
-      navigate("/dashboard");
+      
 
     } catch (err) {
       console.error(err);
