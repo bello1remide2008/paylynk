@@ -25,4 +25,17 @@ export const resolveAccount = async (req, res) => {
         "Account verification failed",
     });
   }
+}const getBanks = async () => {
+  try {
+    const response = await paystack.get("/bank");
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Paystack bank list error:",
+      error.response?.data || error.message
+    );
+
+    throw new Error("Unable to retrieve banks");
+  }
 };
