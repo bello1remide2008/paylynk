@@ -323,39 +323,42 @@ export const getLinkedAccounts = async (
   }
 };
 
-// ✅ SET DEFAULT ACCOUNT
-export const setDefaultAccount = async (req, res) => {
+//export const defaultAccount = async (req, res) => {
   try {
-    const { accountId } = req.body;
+    const { accountId } = req.params;
 
-    // remove previous default
+    const account = await Account.findOne({
+      _id: accountId,
+      userId: req.user._id,
+    });
+
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+      });
+    }
+
     await Account.updateMany(
       { userId: req.user._id },
-      { isDefault: false }
+      { $set: { isDefault: false } }
     );
 
-    // set new default
-    const account = await Account.findOneAndUpdate(
-      {
-        _id: accountId,
-        userId: req.user._id,
-      },
-      {
-        isDefault: true,
-      },
-      {
-        new: true,
-      }
-    );
+    account.isDefault = true;
+    await account.save();
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Default account updated",
       account,
     });
-
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Default account error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to set default account",
+    });
   }
 };
 
@@ -384,19 +387,41 @@ export const unlinkAccount = async (req, res) => {
     });
   }
 };
-export const refreshAccount = async (req,res)=>{
+export const refreshAccount = async (req, res) => {
+  try {
+    const { accountId } = req.params;
 
-const account=await Account.findById(req.params.id);
+    const account = await Account.findOne({
+      _id: accountId,
+      userId: req.user._id,
+    });
 
-res.json({
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+      });
+    }
 
-success:true,
+    // Paystack account verification will go here.
+    // We will use:
+    // account.bankCode
+    // account.accountNumber
 
-account
+    return res.status(200).json({
+      success: true,
+      message: "Account refreshed",
+      account,
+    });
+  } catch (error) {
+    console.error("Refresh account error:", error);
 
-});
-
-}
+    return res.status(500).json({
+      success: false,
+      message: "Unable to refresh account",
+    });
+  }
+};
 export const getDashboardInsight = async (req, res) => {
   try {
 
