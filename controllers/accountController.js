@@ -290,16 +290,36 @@ export const connectAccount = async (req, res) => {
 };
 
 // ✅ GET USER ACCOUNTS
-export const getAccounts = async (req, res) => {
+export const getLinkedAccounts = async (
+  req,
+  res
+) => {
   try {
-    const accounts = await Account.find({ userId: req.user._id });
+    const accounts =
+      await Account.find({
+        userId: req.user._id,
+        status: "active",
+      }).sort({
+        isDefault: -1,
+        createdAt: -1,
+      });
 
-    res.json({
+    return res.status(200).json({
       success: true,
       accounts,
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(
+      "Get linked accounts error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Unable to retrieve linked accounts",
+    });
   }
 };
 
