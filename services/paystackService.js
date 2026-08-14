@@ -33,7 +33,8 @@ export const resolveAccount = async (req, res) => {
         "Account verification failed",
     });
   }
-}const getBanks = async () => {
+}
+  export const getBanks = async () => {
   try {
     const response = await paystack.get("/bank");
 
