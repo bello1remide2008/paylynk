@@ -9,6 +9,7 @@ import {
   refreshAccount,
   getDashboardInsight,
   getSpendingAnalytics,
+  getBanks,
 } from "../controllers/accountController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -63,6 +64,12 @@ router.get(
 "/spending-analytics",
 protect,
 getSpendingAnalytics
+);
+
+router.get(
+  "/banks",
+  protect,
+  getBanks
 );
 
 export default router;
