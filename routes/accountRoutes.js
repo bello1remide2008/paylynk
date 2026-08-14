@@ -10,6 +10,7 @@ import {
   getDashboardInsight,
   getSpendingAnalytics,
   getBanks,
+  verifyAccount,
 } from "../controllers/accountController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -71,5 +72,11 @@ router.get(
   protect,
   getBanks
 );
+router.post(
+  "/verify",
+  protect,
+  verifyAccount
+);
+
 
 export default router;
