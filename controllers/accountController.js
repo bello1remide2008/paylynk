@@ -2,7 +2,7 @@ import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 import { sendEmail } from "../services/emailService.js";
-import { fetchBanks } from "../services/paystackService.js";
+import { fetchBanks,verifyBankAccount, } from "../services/paystackService.js";
 
 
 export const getBanks = async (req, res) => {
@@ -34,6 +34,81 @@ export const getBanks = async (req, res) => {
       message:
         error.message ||
         "Unable to retrieve banks",
+    });
+  }
+};
+export const verifyAccount = async (req, res) => {
+  try {
+    const {
+      accountNumber,
+      bankCode,
+    } = req.body;
+
+    // Validate account number
+    if (!accountNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "Account number is required",
+      });
+    }
+
+    if (!/^\d{10}$/.test(accountNumber)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Account number must contain exactly 10 digits",
+      });
+    }
+
+    // Validate bank
+    if (!bankCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Bank code is required",
+      });
+    }
+
+    const result =
+      await verifyBankAccount(
+        accountNumber,
+        bankCode
+      );
+
+    if (!result.status) {
+      return res.status(400).json({
+        success: false,
+        message:
+          result.message ||
+          "Unable to verify account",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+
+      account: {
+        accountNumber:
+          result.data.account_number,
+
+        accountName:
+          result.data.account_name,
+
+        bankCode:
+          bankCode,
+      },
+    });
+
+  } catch (error) {
+    console.error(
+      "Verify account controller error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error.message ||
+        "Account verification failed",
     });
   }
 };
