@@ -73,5 +73,16 @@ recipientCode: {
   },
   { timestamps: true }
 );
+accountSchema.index(
+  {
+    userId: 1,
+    accountNumber: 1,
+    bankCode: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
 
 export default mongoose.model("Account", accountSchema);
