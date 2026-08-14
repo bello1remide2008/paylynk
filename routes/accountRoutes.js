@@ -28,7 +28,7 @@ router.post(
 );
 
 router.post(
-  "/",
+  "/connect",
   protect,
   connectAccount
 );
