@@ -85,7 +85,7 @@ const BankCards = () => {
       setLoadingBanks(true);
       setError("");
 
-      const response = await fetch(`${API_URL}/banks`, {
+      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/connect, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ const BankCards = () => {
       setLoadingAccounts(true);
       setError("");
 
-      const response = await fetch(`${API_URL}/linked`, {
+      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/linked, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -290,7 +290,7 @@ const BankCards = () => {
       setSettingDefault(accountId);
 
       const response = await fetch(
-        `${API_URL}/default/${accountId}`,
+        "https://paylynk-1.onrender.com/api/default/${accountId}",
         {
           method: "PATCH",
           headers: {
@@ -348,7 +348,7 @@ const BankCards = () => {
       setUnlinking(accountId);
 
       const response = await fetch(
-        `${API_URL}/unlink/${accountId}`,
+        "https://paylynk-1.onrender.com/api/unlink/${accountId}",
         {
           method: "DELETE",
           headers: {
@@ -402,7 +402,7 @@ const BankCards = () => {
       setRefreshing(accountId);
 
       const response = await fetch(
-        `${API_URL}/refresh/${accountId}`,
+        "https://paylynk-1.onrender.com/api/refresh/${accountId}",
         {
           method: "PATCH",
           headers: {
