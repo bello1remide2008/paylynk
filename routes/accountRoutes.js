@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   connectAccount,
-  getAccounts,
+  getLinkedAccounts,
   setDefaultAccount,
   sendMoney,
   unLinkAccount,
@@ -36,7 +36,7 @@ router.post(
 router.get(
   "/",
   protect,
-  getAccounts
+  getLinkedAccounts
 );
 
 router.patch(
