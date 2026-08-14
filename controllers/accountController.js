@@ -185,11 +185,69 @@ export const connectAccount = async (req, res) => {
     const account = await Account.create({
       userId: req.user._id,
       bankName,
+      bankCode,
       accountNumber,
       accountName,
       balance: 0,
     });
 
+    if (
+      !bankName ||
+      !bankCode ||
+      !accountNumber ||
+      !accountName
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All account details are required",
+      });
+    }
+
+    // Check if account already exists
+    const existingAccount =
+      await Account.findOne({
+        userId,
+        accountNumber,
+        bankCode,
+      });
+
+    if (existingAccount) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "This bank account is already linked",
+      });
+    }
+
+    // Check whether user already has
+    // a default account
+    const accountCount =
+      await Account.countDocuments({
+        userId,
+        status: "active",
+      });
+
+    const isFirstAccount =
+      accountCount === 0;
+
+    const account = await Account.create({
+      userId,
+
+      bankName,
+
+      bankCode,
+
+      accountNumber,
+
+      accountName,
+
+      verified: true,
+
+      isDefault: isFirstAccount,
+
+      status: "active",
+    });
     // ✅ send email after successful account creation
     await sendEmail({
       to: req.user.email,
