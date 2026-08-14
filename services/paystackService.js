@@ -83,3 +83,38 @@ export const verifyBankAccount = async (
     );
   }
 };
+
+// ===============================
+// VERIFY BANK ACCOUNT
+// ===============================
+
+export const verifyBankAccount = async (
+  accountNumber,
+  bankCode
+) => {
+  try {
+    const response = await paystack.get(
+      "/bank/resolve",
+      {
+        params: {
+          account_number: accountNumber,
+          bank_code: bankCode,
+        },
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error(
+      "Paystack account verification error:",
+      error.response?.data ||
+        error.message
+    );
+
+    throw new Error(
+      error.response?.data?.message ||
+        "Unable to verify bank account"
+    );
+  }
+};
