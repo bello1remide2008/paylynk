@@ -41,6 +41,10 @@ const fetchBanks = async (req, res) => {
     });
   }
 };
+module.exports = {
+  fetchBanks,
+  resolveAccount,
+};
 
 // ✅ SEND MONEY
 export const sendMoney = async (req, res) => {
