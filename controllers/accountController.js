@@ -2,16 +2,12 @@ import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 import { sendEmail } from "../services/emailService.js";
-const {
-  getBanks,
-  resolveBankAccount,
-} = require("../services/paystackService");
+import { fetchBanks } from "../services/paystackService.js";
 
 
-const fetchBanks = async (req, res) => {
+export const getBanks = async (req, res) => {
   try {
-
-    const result = await getBanks();
+    const result = await fetchBanks();
 
     if (!result.status) {
       return res.status(400).json({
@@ -28,7 +24,6 @@ const fetchBanks = async (req, res) => {
     });
 
   } catch (error) {
-
     console.error(
       "Fetch banks error:",
       error
@@ -37,13 +32,10 @@ const fetchBanks = async (req, res) => {
     return res.status(500).json({
       success: false,
       message:
+        error.message ||
         "Unable to retrieve banks",
     });
   }
-};
-module.exports = {
-  fetchBanks,
-  resolveAccount,
 };
 
 // ✅ SEND MONEY
