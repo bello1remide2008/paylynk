@@ -2,6 +2,45 @@ import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 import { sendEmail } from "../services/emailService.js";
+const {
+  getBanks,
+  resolveBankAccount,
+} = require("../services/paystackService");
+
+
+const fetchBanks = async (req, res) => {
+  try {
+
+    const result = await getBanks();
+
+    if (!result.status) {
+      return res.status(400).json({
+        success: false,
+        message:
+          result.message ||
+          "Unable to fetch banks",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      banks: result.data,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Fetch banks error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Unable to retrieve banks",
+    });
+  }
+};
 
 // ✅ SEND MONEY
 export const sendMoney = async (req, res) => {
