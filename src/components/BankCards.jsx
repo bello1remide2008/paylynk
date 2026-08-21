@@ -235,7 +235,7 @@ const BankCards = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
+        '}',
         body: JSON.stringify({
           bankName: newBank.bankName,
           bankCode: newBank.bankCode,
