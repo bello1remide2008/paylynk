@@ -226,22 +226,22 @@ const BankCards = () => {
       return;
     }
 
-    try {
-      setConnecting(true);
-      setError("");
+   try {
+  setConnecting(true);
+  setError("");
 
-      const response = await fetch(`${API_UR/connect`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        '}',
-        body: JSON.stringify({
-          bankName: newBank.bankName,
-          bankCode: newBank.bankCode,
-          accountNumber: newBank.accountNumber,
-        }),
-      });
+  const response = await fetch(`${API_URL}/connect`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      bankName: newBank.bankName,
+      bankCode: newBank.bankCode,
+      accountNumber: newBank.accountNumber,
+    }),
+  });
 
       const data = await response.json();
 
