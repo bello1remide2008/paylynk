@@ -85,7 +85,7 @@ const BankCards = () => {
       setLoadingBanks(true);
       setError("");
 
-      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/connect, {
+      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/connect", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ const BankCards = () => {
       setLoadingAccounts(true);
       setError("");
 
-      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/linked, {
+      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/linked", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
