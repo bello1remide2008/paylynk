@@ -231,23 +231,9 @@ export const connectAccount = async (req, res) => {
     const isFirstAccount =
       accountCount === 0;
 
-    const account = await Account.create({
-      userId,
-
-      bankName,
-
-      bankCode,
-
-      accountNumber,
-
-      accountName,
-
-      verified: true,
-
-      isDefault: isFirstAccount,
-
-      status: "active",
-    });
+    export const createAccount = async (req, res) => {
+  try {
+    const { userId, bankName, bankCode, accountNumber, accountName } = req.body;
     // ✅ send email after successful account creation
     await sendEmail({
       to: req.user.email,
