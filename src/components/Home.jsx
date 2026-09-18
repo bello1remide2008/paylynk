@@ -41,7 +41,7 @@ const Home = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
             >
               <div>
-                <p className="text-xl mb-2">
+                <p className="text-xl w-full mb-2">
                   Instant <span className="text-[#361DFC] font-semibold">Payments</span>
                 </p>
                 <h1 className="text-5xl md:text-6xl font-bold leading-tight">
