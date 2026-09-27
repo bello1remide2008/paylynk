@@ -12,6 +12,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import paystackRoutes from "./routes/paystackRoutes.js";
 import onePipeRoutes from "./routes/onePipeRoutes.js";
+import walletRoutes from "./routes/walletRoutes.js";
 
 
 import { errorHandler } from "./middleware/errorMiddleware.js";
@@ -38,6 +39,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/paystack", paystackRoutes);
 app.use("/api/onePipe", onePipeRoutes);
+app.use("/api/wallet", walletRoutes);
 
 // 🔥 ERROR HANDLER
 app.use(errorHandler);
