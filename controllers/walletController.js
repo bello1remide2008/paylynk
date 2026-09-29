@@ -1,19 +1,20 @@
+
 import Wallet from "../models/Wallet.js";
 
 // ======================================
 // GET LOGGED-IN USER'S WALLET
 // GET /api/wallet
 // ======================================
+
 export const getWallet = async (req, res) => {
   try {
     let wallet = await Wallet.findOne({
-      user: req.user._id,
+      userId: req.user._id,
     });
 
-    // Create wallet if it doesn't exist
     if (!wallet) {
       wallet = await Wallet.create({
-        user: req.user._id,
+        userId: req.user._id,
         balance: 0,
         currency: "NGN",
       });
@@ -43,10 +44,11 @@ export const getWallet = async (req, res) => {
 // CREATE WALLET
 // POST /api/wallet/create
 // ======================================
+
 export const createWallet = async (req, res) => {
   try {
     const existingWallet = await Wallet.findOne({
-      user: req.user._id,
+      userId: req.user._id,
     });
 
     if (existingWallet) {
@@ -62,7 +64,7 @@ export const createWallet = async (req, res) => {
     }
 
     const wallet = await Wallet.create({
-      user: req.user._id,
+      userId: req.user._id,
       balance: 0,
       currency: "NGN",
     });
