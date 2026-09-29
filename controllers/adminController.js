@@ -2,6 +2,9 @@ import User from "../models/User.js";
 import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
 import { sendEmail } from "../services/emailService.js";
+import User from "../models/User.js";
+import Account from "../models/Account.js";
+import Transaction from "../models/Transaction.js"
 
 
 // ✅ GET ALL USERS (WITH SEARCH)
@@ -162,9 +165,6 @@ const revenue = await Transaction.aggregate([
   }
 };
 
-import User from "../models/User.js";
-import Account from "../models/Account.js";
-import Transaction from "../models/Transaction.js";
 
 export const getAnalytics = async (req, res) => {
   try {
