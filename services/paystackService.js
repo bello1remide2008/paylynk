@@ -1,40 +1,22 @@
+
 import axios from "axios";
 
 const paystack = axios.create({
-  baseURL: process.env.PAYSTACK_BASE_URL || "https://api.paystack.co",
+  baseURL:
+    process.env.PAYSTACK_BASE_URL ||
+    "https://api.paystack.co",
+
   headers: {
     Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
     "Content-Type": "application/json",
   },
 });
 
-export const resolveAccount = async (req, res) => {
-  try {
-    const { accountNumber, bankCode } = req.body;
+// ===============================
+// GET BANKS
+// ===============================
 
-    const response = await axios.get(
-      `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        },
-      }
-    );
-
-    return res.status(200).json({
-      success: true,
-      accountName: response.data.data.account_name,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message:
-        error.response?.data?.message ||
-        "Account verification failed",
-    });
-  }
-}
-  export const getBanks = async () => {
+export const getBanks = async () => {
   try {
     const response = await paystack.get("/bank");
 
@@ -45,41 +27,9 @@ export const resolveAccount = async (req, res) => {
       error.response?.data || error.message
     );
 
-    throw new Error("Unable to retrieve banks");
-  }
-};
-
-// ===============================
-// VERIFY BANK ACCOUNT
-// ===============================
-
-export const verifyBankAccount = async (
-  accountNumber,
-  bankCode
-) => {
-  try {
-    const response = await paystack.get(
-      "/bank/resolve",
-      {
-        params: {
-          account_number: accountNumber,
-          bank_code: bankCode,
-        },
-      }
-    );
-
-    return response.data;
-
-  } catch (error) {
-    console.error(
-      "Paystack account verification error:",
-      error.response?.data ||
-        error.message
-    );
-
     throw new Error(
       error.response?.data?.message ||
-        "Unable to verify bank account"
+      "Unable to retrieve banks"
     );
   }
 };
@@ -104,17 +54,49 @@ export const verifyBankAccount = async (
     );
 
     return response.data;
-
   } catch (error) {
     console.error(
       "Paystack account verification error:",
-      error.response?.data ||
-        error.message
+      error.response?.data || error.message
     );
 
     throw new Error(
       error.response?.data?.message ||
-        "Unable to verify bank account"
+      "Unable to verify bank account"
     );
+  }
+};
+
+// ===============================
+// RESOLVE BANK ACCOUNT (CONTROLLER)
+// ===============================
+
+export const resolveAccount = async (req, res) => {
+  try {
+    const { accountNumber, bankCode } = req.body;
+
+    if (!accountNumber || !bankCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Account number and bank code are required",
+      });
+    }
+
+    const result = await verifyBankAccount(
+      accountNumber,
+      bankCode
+    );
+
+    return res.status(200).json({
+      success: true,
+      accountName: result.data.account_name,
+      accountNumber: result.data.account_number,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message:
+        error.message || "Account verification failed",
+    });
   }
 };
