@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import { sendEmail } from "../services/emailService.js";
 import { fetchBanks, verifyBankAccount } from "../services/paystackService.js";
 
-// Make sure logActivity is correctly imported (or defined)
+// Make sure logActivity is correctly imported (or defined)//fr4
 // import { logActivity } from "../services/activityService.js";
 
 export const getBanks = async (req, res) => {
