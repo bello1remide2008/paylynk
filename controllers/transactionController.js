@@ -6,7 +6,7 @@ import AdminWallet from "../models/AdminWallet.js";
 
 
 
-// export const sendMoney = async (req, res) => {
+export const sendMoney = async (req, res) => {
   try {
     const { accountId, amount, receiverBank, receiverAccount, receiverName } = req.body;
 
