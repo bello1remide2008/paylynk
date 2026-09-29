@@ -2,8 +2,8 @@ import User from "../models/User.js";
 import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
 import { sendEmail } from "../services/emailService.js";
-import Account from "../models/Account.js";
-import Transaction from "../models/Transaction.js"
+
+
 
 
 // ✅ GET ALL USERS (WITH SEARCH)
