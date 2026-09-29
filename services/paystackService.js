@@ -16,7 +16,7 @@ const paystack = axios.create({
 // GET BANKS
 // ===============================
 
-export const getBanks = async () => {
+export const fetchBanks = async () => {
   try {
     const response = await paystack.get("/bank");
 
