@@ -3,7 +3,7 @@ import express from "express";
 import {
   connectAccount,
   getLinkedAccounts,
-  setDefaultAccount,
+  DefaultAccount,
   sendMoney,
   unLinkAccount,
   refreshAccount,
@@ -42,7 +42,7 @@ router.get(
 router.patch(
   "/default",
   protect,
-  setDefaultAccount
+  DefaultAccount
 );
 router.delete(
 "/:id",
