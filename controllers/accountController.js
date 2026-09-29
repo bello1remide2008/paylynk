@@ -277,7 +277,7 @@ export const getLinkedAccounts = async (req, res) => {
 };
 
 // ✅ DEFAULT ACCOUNT
-export const defaultAccount = async (req, res) => {
+export const getDefaultAccount = async (req, res) => {
   try {
     const { accountId } = req.params;
 
