@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
+import WalletBalance from "./WalletBalance";
 import {
   FaUsers,
   FaUniversity,
@@ -181,6 +182,9 @@ if (savedAccounts.length > 0) {
           setActiveAccount={setActiveAccount}
           setAccounts={setAccounts}
         />
+        <div className="mt-6">
+  <WalletBalance />
+</div>
 
         <InsightWidget insight={insight} />
         import SpendingAnalytics from "./SpendingAnalytics";
