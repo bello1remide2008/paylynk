@@ -10,7 +10,6 @@ import accountRoutes from "./routes/accountRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
-import paystackRoutes from "./routes/paystackRoutes.js";
 import onePipeRoutes from "./routes/onePipeRoutes.js";
 import walletRoutes from "./routes/walletRoutes.js";
 
@@ -37,7 +36,6 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
-app.use("/api/paystack", paystackRoutes);
 app.use("/api/onePipe", onePipeRoutes);
 app.use("/api/wallet", walletRoutes);
 
