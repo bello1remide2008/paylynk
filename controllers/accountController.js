@@ -315,7 +315,7 @@ export const getDefaultAccount = async (req, res) => {
   }
 };
 
-export const unlinkAccount = async (req, res) => {
+export const unLinkAccount = async (req, res) => {
   try {
     await Account.findByIdAndUpdate(
       req.params.id,
