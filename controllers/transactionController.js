@@ -6,73 +6,36 @@ import AdminWallet from "../models/AdminWallet.js";
 
 
 
-// ✅ SEND MONEY
-export const sendMoney = async (req, res) => {
+// export const sendMoney = async (req, res) => {
   try {
-    const {
-      accountId,
-      amount,
-      receiverBank,
-      receiverAccount,
-      receiverName,
-    } = req.body;
+    const { accountId, amount, receiverBank, receiverAccount, receiverName } = req.body;
 
-    if (!amount || amount <= 0) {
+    if (!amount || amount <= 0)
       return res.status(400).json({ message: "Invalid amount" });
-    }
 
     const account = await Account.findById(accountId);
-
-    if (!account) {
+    if (!account)
       return res.status(404).json({ message: "Account not found" });
-    }
 
-    // ✅ freeze check FIXED
-    if (account.isFrozen) {
-      return res.status(403).json({
-        message: "Account is frozen. Transactions not allowed.",
-      });
-    }
+    if (account.isFrozen)
+      return res.status(403).json({ message: "Account is frozen. Transactions not allowed." });
 
-    if (account.balance < amount) {
+    if (account.balance < amount)
       return res.status(400).json({ message: "Insufficient balance" });
-    }
 
-     let vat = 0;
-
-    if (amount >= 100000) {
-      vat = amount * 0.01;
-    }
+    let vat = 0;
+    if (amount >= 100000) vat = amount * 0.01;
 
     const adminWallet = await AdminWallet.findOne();
 
-    sender.balance -= amount;
-
-    receiver.balance += amount - vat;
-
-    adminWallet.balance += vat;
-    adminWallet.vatBalance += vat;
-
-      await sender.save();
-    await receiver.save();
-    await adminWallet.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Transfer successful",
-      vat,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-    // deduct balance
     account.balance -= amount;
     await account.save();
+
+    if (adminWallet && vat > 0) {
+      adminWallet.balance += vat;
+      adminWallet.vatBalance += vat;
+      await adminWallet.save();
+    }
 
     const transaction = await Transaction.create({
       userId: req.user._id,
@@ -87,10 +50,7 @@ export const sendMoney = async (req, res) => {
       reference: "TXN-" + Date.now(),
     });
 
-    return res.status(201).json({
-      success: true,
-      transaction,
-    });
+    return res.status(201).json({ success: true, transaction, vat });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
