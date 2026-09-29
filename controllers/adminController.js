@@ -1,8 +1,7 @@
 import User from "../models/User.js";
 import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js";
-import { sendEmail } from "../services/emailService.js";
-import User from "../models/User.js";
+import { sendEmail } from "../services/emailServices;
 import Account from "../models/Account.js";
 import Transaction from "../models/Transaction.js"
 
