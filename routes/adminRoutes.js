@@ -26,7 +26,7 @@ router.get("/users/:id", adminProtect, getUserDetails);
 router.get("/stats", adminProtect, getAdminStats);
 router.get(
   "/analytics",
-  protectAdmin,
+  adminProtect,
   getAnalytics
 );
 
