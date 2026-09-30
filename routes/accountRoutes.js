@@ -47,7 +47,7 @@ router.patch(
 router.delete(
 "/:id",
 protect,
-unlinkAccount
+unLinkAccount
 );
 
 router.get(
