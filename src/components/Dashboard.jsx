@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React,  { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
 import WalletBalance from "./WalletBalance";
  
@@ -127,7 +127,7 @@ const Dashboard = () => {
       loadNotifications
     );
   };
-}, []);
+}, [token]);
   const unreadCount = notifications.filter(
   (notification) => !notification.read
 ).length;
