@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
 import WalletBalance from "./WalletBalance";
- import SpendingAnalytics from "./SpendingAnalytics";
-import {
+ 
+import 
   FaUsers,
   FaUniversity,
   FaExchangeAlt,
