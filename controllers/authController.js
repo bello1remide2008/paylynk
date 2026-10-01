@@ -175,6 +175,7 @@ export const verifyOtp = async (req, res) => {
 
 
 export const loginUser = async (req, res) => { 
+  console.log("🔥 LOGIN CONTROLLER REACHED");
   try { 
     const { login, password } = req.body; 
  
