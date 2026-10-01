@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
 import WalletBalance from "./WalletBalance";
+ import SpendingAnalytics from "./SpendingAnalytics";
 import {
   FaUsers,
   FaUniversity,
@@ -23,6 +24,7 @@ const Dashboard = () => {
   const [analytics,setAnalytics]=useState({});
 
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // GET TRANSACTIONS
   const getTransactions = () => {
@@ -129,18 +131,7 @@ const Dashboard = () => {
   const unreadCount = notifications.filter(
   (notification) => !notification.read
 ).length;
-  const savedAccounts =
-JSON.parse(localStorage.getItem("epay_accounts")) || [];
 
-setAccounts(savedAccounts);
-
-if (savedAccounts.length > 0) {
-  const defaultAcc = savedAccounts.find(
-    (acc) => acc.isDefault
-  );
-
-  setActiveAccount(defaultAcc || savedAccounts[0]);
-}
 
   return (
     <div className="min-h-screen  w-full bg-gray-100">
@@ -187,7 +178,8 @@ if (savedAccounts.length > 0) {
 </div>
 
         <InsightWidget insight={insight} />
-        import SpendingAnalytics from "./SpendingAnalytics";
+        <SpendingAnalytics analytics={analytics} />
+       
 
         {/* PAYMENTS */}
         <div className="bg-white rounded-3xl p-6 shadow-lg w-full mb-6">
