@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
-import { logActivity } from "../utils/activityLoggers.js"
+import { logActivity } from "../utils/activityLogger.js"
 
 import crypto from "crypto";
 
