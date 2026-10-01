@@ -12,6 +12,7 @@ const Login = () => {
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // 🔥 Notifications
   const addNotification = (title, message, type = "System") => {
@@ -176,7 +177,23 @@ const Login = () => {
               className="w-full px-4 py-3 rounded-full bg-[#10263f] outline-none"
             />
 
-            <EyeIcon className="w-5 h-5 absolute right-4 top-3.5 text-gray-400" />
+            <div className="relative mb-4">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="w-full px-4 py-3 pr-12 rounded-full bg-[#10263f] outline-none"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+  >
+    <EyeIcon className="w-5 h-5" />
+  </button>
+</div>
 
           </div>
 
