@@ -8,7 +8,7 @@ import {
   resetPassword,
   logoutUser
 } from "../controllers/authController.js";
-import { protect } from "../middleware/authMiddleware.js";
+
 
 const router = express.Router();
 
@@ -17,17 +17,17 @@ const router = express.Router();
  */
 
 // Register user + send email OTP
-router.post("/register-init", protect,  registerInit);
+router.post("/register-init",   registerInit);
 
 // Login user
-router.post("/login", protect,  loginUser);
+router.post("/login",   loginUser);
 
 // Verify OTP (email-based)
-router.post("/verify-otp", protect,  verifyOtp);
-router.post("/resend-otp",  protect, resendOtp);
-router.post("/forgot-password", protect, forgotPassword);
+router.post("/verify-otp",  verifyOtp);
+router.post("/resend-otp",   resendOtp);
+router.post("/forgot-password",  forgotPassword);
 
-router.put("/reset-password/:token", protect,  resetPassword);
+router.put("/reset-password/:token",   resetPassword);
 router.post("/logout", protect,  logoutUser);
 
 export default router;
