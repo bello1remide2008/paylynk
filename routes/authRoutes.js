@@ -28,6 +28,6 @@ router.post("/resend-otp",   resendOtp);
 router.post("/forgot-password",  forgotPassword);
 
 router.put("/reset-password/:token",   resetPassword);
-router.post("/logout", protect,  logoutUser);
+router.post("/logout",   logoutUser);
 
 export default router;
