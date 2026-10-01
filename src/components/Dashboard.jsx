@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
 import WalletBalance from "./WalletBalance";
  
-import 
+import {
   FaUsers,
   FaUniversity,
   FaExchangeAlt,
