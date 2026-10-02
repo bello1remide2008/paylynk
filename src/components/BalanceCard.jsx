@@ -5,7 +5,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const BalanceCard = ({
