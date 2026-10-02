@@ -6,15 +6,24 @@ html,
 body,
 #root {
   width: 100%;
-  min-width: 0;
+  min-width: 320px;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 }
 
-body {
+html {
   overflow-x: hidden;
 }
 
-* {
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
