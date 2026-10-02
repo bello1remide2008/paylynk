@@ -1,4 +1,4 @@
-```jsx
+
 import React, { useCallback, useEffect, useState } from "react";
 import {
   FaEye,
