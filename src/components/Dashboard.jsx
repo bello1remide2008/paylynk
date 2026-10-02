@@ -1,6 +1,5 @@
 import React,  { useState, useEffect } from "react";
 import BalanceCard from "./BalanceCard";
-import WalletBalance from "./WalletBalance";
  
 import {
   FaUsers,
@@ -173,9 +172,7 @@ const Dashboard = () => {
           setActiveAccount={setActiveAccount}
           setAccounts={setAccounts}
         />
-        <div className="mt-6">
-  <WalletBalance />
-</div>
+      
 
         <InsightWidget insight={insight} />
         <SpendingAnalytics analytics={analytics} />
