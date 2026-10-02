@@ -51,7 +51,7 @@ function App() {
     location.pathname.startsWith("/admin");
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-white text-gray-900">
       {!hideNavbar && <Navbar />}
 
       <Routes>
