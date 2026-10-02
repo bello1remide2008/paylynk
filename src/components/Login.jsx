@@ -166,16 +166,8 @@ const Login = () => {
             className="w-full px-4 py-3 rounded-full bg-[#10263f] mb-4 outline-none"
           />
 
-          {/* PASSWORD */}
-          <div className="relative mb-4">
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-full bg-[#10263f] outline-none"
-            />
+          
+         
 
             <div className="relative mb-4">
   <input
