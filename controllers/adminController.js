@@ -504,21 +504,37 @@ export const getAnalytics = async (req, res) => {
 };
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.params.id)
+      .select("-password");
 
-    const accounts = await Account.find({ userId: user._id });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const accounts = await Account.find({
+      userId: user._id,
+    });
 
     const transactions = await Transaction.find({
       userId: user._id,
     }).sort({ createdAt: -1 });
 
-    res.json({
-      user,
+    return res.status(200).json({
+      user: {
+        ...user.toObject(),
+        profileImage: user.profileImage || "",
+      },
       accounts,
       transactions,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Get user profile error:", error);
+
+    return res.status(500).json({
+      message: "Failed to retrieve user profile",
+    });
   }
 };
 export const blockUser = async (req, res) => {
