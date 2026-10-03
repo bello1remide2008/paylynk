@@ -82,7 +82,7 @@ virtualAccountBank: {
   
   profileImage: {
   type: String,
-  default: "https://via.placeholder.com/150",
+  default: "h",
 },
         resetPasswordToken: {
       type:String,
