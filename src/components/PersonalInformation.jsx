@@ -28,10 +28,46 @@ const [saveMessage, setSaveMessage] = useState("");
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };  
+ const handleSubmit = (e) => {
+  e.preventDefault();
+
+  try {
+    const currentUser = JSON.parse(
+      localStorage.getItem("userInfo") || "null"
+    ) || {};
+
+    const updatedUser = {
+      ...currentUser,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      email: formData.email,
+      phone: formData.phone,
+      profileImage,
+    };
+
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify(updatedUser)
+    );
+
+    // Keep older components using "user" synchronized.
+    localStorage.setItem(
+      "user",
+      JSON.stringify(updatedUser)
+    );
+
+    // Notify components in the same browser tab.
+    window.dispatchEvent(new Event("profileUpdated"));
+
+    setSaveMessage("Profile saved on this device.");
+  } catch (error) {
+    console.error("Failed to save profile:", error);
+    setSaveMessage(
+      "Unable to save your profile. Please try a smaller image."
+    );
+  }
+};
   useEffect(() => {
   try {
     const userInfo = JSON.parse(
@@ -70,6 +106,33 @@ const [saveMessage, setSaveMessage] = useState("");
     console.error("Failed to load profile:", error);
   }
 }, []);
+  const handlePhotoChange = (event) => {
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image file.");
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Please select an image smaller than 5 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    setProfileImage(reader.result);
+  };
+
+  reader.onerror = () => {
+    alert("Unable to load this image. Please try again.");
+  };
+
+  reader.readAsDataURL(file);
+};
 
   return (
   
@@ -77,35 +140,47 @@ const [saveMessage, setSaveMessage] = useState("");
       onSubmit={handleSubmit}
       className="bg-white rounded-2xl shadow p-8 space-y-8"
     > 
-    <div className="space-y-3">
-      
-  <label className="font-semibold">Profile Picture</label>
+   {/* PROFILE PICTURE */}
+<div className="space-y-4">
+  <label className="block font-semibold text-gray-800">
+    Profile Picture
+  </label>
 
-  <div className="flex gap-4">
-    {/* Take Photo */}
-    <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg">
-      Take Photo
-      <input
-        type="file"
-        accept="image/*"
-        capture="user"
-        name="profilePhoto"
-        onChange={handleChange}
-        className="hidden"
-      />
-    </label>
+  <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+    <img
+      src={profileImage || "/default-avatar.png"}
+      alt="Profile preview"
+      onError={(event) => {
+        event.currentTarget.onerror = null;
+        event.currentTarget.src = "/default-avatar.png";
+      }}
+      className="h-24 w-24 rounded-full border-2 border-gray-200 bg-gray-100 object-cover"
+    />
 
-    {/* Upload Photo */}
-    <label className="cursor-pointer border px-4 py-2 rounded-lg">
-      Upload Photo
-      <input
-        type="file"
-        accept="image/*"
-        name="profilePhoto"
-        onChange={handleChange}
-        className="hidden"
-      />
-    </label>
+    <div className="flex flex-wrap gap-3">
+      <label className="cursor-pointer rounded-lg bg-blue-600 px-4 py-3 text-white hover:bg-blue-700">
+        Take Photo
+
+        <input
+          type="file"
+          accept="image/*"
+          capture="user"
+          onChange={handlePhotoChange}
+          className="hidden"
+        />
+      </label>
+
+      <label className="cursor-pointer rounded-lg border border-gray-300 px-4 py-3 text-gray-700 hover:bg-gray-50">
+        Upload Photo
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoChange}
+          className="hidden"
+        />
+      </label>
+    </div>
   </div>
 </div>
 
@@ -276,7 +351,12 @@ const [saveMessage, setSaveMessage] = useState("");
           </div>
         </div>
       </div>
-
+      
+       {saveMessage && (
+  <p className="text-sm text-green-600" role="status">
+    {saveMessage}
+  </p>
+)}
       {/* Button */}
       <button
         type="submit"
