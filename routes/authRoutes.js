@@ -8,6 +8,11 @@ import {
   resetPassword,
   logoutUser
 } from "../controllers/authController.js";
+import {
+  updateProfileImage,
+  uploadProfileImageMiddleware,
+} from "../controllers/profileImageController.js";
+
 
 
 const router = express.Router();
@@ -29,5 +34,9 @@ router.post("/forgot-password",  forgotPassword);
 
 router.put("/reset-password/:token",   resetPassword);
 router.post("/logout",   logoutUser);
+router.put(
+  "/profile-image",
+  uploadProfileImageMiddleware,
+  updateProfileImage
 
 export default router;
