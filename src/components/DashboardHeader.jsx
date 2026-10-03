@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const DashboardHeader = () => {
   const navigate = useNavigate();
 const [uploadingImage, setUploadingImage] = useState(false);
-  const [profileImage, setProfileImage] = useState("");
+ 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Load the saved profile image
@@ -48,70 +48,100 @@ const [uploadingImage, setUploadingImage] = useState(false);
   }, []);
 
   // Upload a profile image
-  const handleImageChange = (event) => {
-    const file = event.target.files?.[0];
+ 
 
-    if (!file) return;
+const handleImageChange = async (event) => {
+  const file = event.target.files?.[0];
 
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file.");
-      event.target.value = "";
-      return;
-    }
+  if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Please select an image smaller than 5 MB.");
-      event.target.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      if (typeof reader.result !== "string") {
-        alert("Unable to read the selected image.");
-        return;
-      }
-
-      try {
-        const imageData = reader.result;
-
-        // Save using the existing key
-        localStorage.setItem("profileImage", imageData);
-
-        // Keep user profile records synchronized
-        ["userInfo", "user"].forEach((key) => {
-          const savedUser = JSON.parse(
-            localStorage.getItem(key) || "null"
-          );
-
-          if (savedUser) {
-            savedUser.profileImage = imageData;
-            localStorage.setItem(key, JSON.stringify(savedUser));
-          }
-        });
-
-        setProfileImage(imageData);
-
-        // Notify components in this tab
-        window.dispatchEvent(new Event("profileUpdated"));
-      } catch (error) {
-        console.error("Unable to save profile image:", error);
-        alert(
-          "Unable to save this image in browser storage. Try a smaller image."
-        );
-      }
-    };
-
-    reader.onerror = () => {
-      alert("Unable to read this image. Please try again.");
-    };
-
-    reader.readAsDataURL(file);
-
-    // Allow the same file to be selected again
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image file.");
     event.target.value = "";
-  };
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Please select an image smaller than 5 MB.");
+    event.target.value = "";
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please log in again before updating your profile picture.");
+    event.target.value = "";
+    return;
+  }
+
+  try {
+    setUploadingImage(true);
+
+    const formData = new FormData();
+    formData.append("profileImage", file);
+
+    const response = await fetch(
+      "https://paylynk-1.onrender.com/api/auth/profile-image",
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Failed to upload profile picture."
+      );
+    }
+
+    const imageUrl = result.profileImage;
+
+    // Update the current header immediately.
+    setProfileImage(imageUrl);
+
+    // Keep the existing local user records synchronized.
+    localStorage.setItem("profileImage", imageUrl);
+
+    ["userInfo", "user"].forEach((key) => {
+      try {
+        const savedUser = JSON.parse(
+          localStorage.getItem(key) || "null"
+        );
+
+        if (savedUser) {
+          savedUser.profileImage = imageUrl;
+
+          localStorage.setItem(
+            key,
+            JSON.stringify(savedUser)
+          );
+        }
+      } catch (error) {
+        console.error(`Could not update ${key}:`, error);
+      }
+    });
+
+    window.dispatchEvent(new Event("profileUpdated"));
+
+    alert("Profile picture updated successfully!");
+  } catch (error) {
+    console.error("Profile image upload failed:", error);
+
+    alert(
+      error.message ||
+      "Unable to update your profile picture. Please try again."
+    );
+  } finally {
+    setUploadingImage(false);
+    event.target.value = "";
+  }
+};
 
   const navigateTo = (path) => {
     setMobileMenuOpen(false);
