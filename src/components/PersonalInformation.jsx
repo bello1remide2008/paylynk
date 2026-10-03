@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 
 export default function PersonalInformation() {
@@ -16,6 +16,8 @@ export default function PersonalInformation() {
     idNumber: "",
     idFile: null,
   });
+  const [profileImage, setProfileImage] = useState("");
+const [saveMessage, setSaveMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -29,7 +31,45 @@ export default function PersonalInformation() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
-  };
+  };  
+  useEffect(() => {
+  try {
+    const userInfo = JSON.parse(
+      localStorage.getItem("userInfo") || "null"
+    );
+
+    const oldUser = JSON.parse(
+      localStorage.getItem("user") || "null"
+    );
+
+    const savedUser = userInfo || oldUser;
+
+    if (savedUser) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName:
+          savedUser.firstName ||
+          savedUser.name?.split(" ")[0] ||
+          "",
+        lastName:
+          savedUser.lastName ||
+          savedUser.name?.split(" ").slice(1).join(" ") ||
+          "",
+        email: savedUser.email || "",
+        phone: savedUser.phone || "",
+      }));
+
+      setProfileImage(
+        savedUser.profileImage ||
+        savedUser.image ||
+        savedUser.avatar ||
+        ""
+      );
+    }
+  } catch (error) {
+    console.error("Failed to load profile:", error);
+  }
+}, []);
 
   return (
   
