@@ -242,10 +242,14 @@ if (error) return <p className="p-6 text-red-500">{error}</p>;
       <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
 
         <img
-          src={data.user.profileImage || "https://via.placeholder.com/150"}
-          alt="profile"
-          className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
-        />
+  src={data?.user?.profileImage || "/default-avatar.png"}
+  alt={`${data?.user?.name || "User"}'s profile`}
+  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = "/default-avatar.png";
+  }}
+/>
 
         <h2 className="mt-4 text-xl font-bold">{data.user.name}</h2>
         <p className="text-gray-500">{data.user.email}</p>
