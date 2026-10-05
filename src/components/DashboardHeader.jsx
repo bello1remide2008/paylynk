@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const DashboardHeader = () => {
   const navigate = useNavigate();
 const [uploadingImage, setUploadingImage] = useState(false);
+  const [profileImage, setProfileImage] = useState("");
  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
