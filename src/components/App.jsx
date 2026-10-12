@@ -13,7 +13,7 @@ import SelectBank from "./SelectBank";
 import EnterBvn from "./EnterBvn";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
-
+import ContinueRegistration from "./ContinueRegistration";
 import DashboardLayout from "./DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./Dashboard";
@@ -58,6 +58,10 @@ function App() {
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
+        <Route
+  path="/continue-registration"
+  element={<ContinueRegistration />}
+/>
         <Route path="/login" element={<Login />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/about-us" element={<AboutUs />} />
