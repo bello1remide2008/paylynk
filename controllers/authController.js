@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 import { sendEmail } from "../services/emailService.js";
 import { logActivity } from "../utils/activityLogger.js";
+import { randomInt } from "node:crypto";
 
 import crypto from "crypto";
 
@@ -164,6 +165,93 @@ export const verifyOtp = async (req, res) => {
 
     res.status(500).json({
       message: error.message,
+    });
+  }
+};
+// ======================================
+// CONTINUE INCOMPLETE REGISTRATION
+// ======================================
+
+export const resumeRegistration = async (req, res) => {
+  try {
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email address is required",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    // Generic response to avoid exposing whether an email is registered.
+    const genericResponse = {
+      success: true,
+      message:
+        "If an eligible registration exists, a verification code will be sent.",
+    };
+
+    if (!user) {
+      return res.status(200).json(genericResponse);
+    }
+
+    // Users who already verified their email should sign in.
+    // Their remaining registration steps will be handled after login.
+    if (user.isVerified) {
+      return res.status(200).json(genericResponse);
+    }
+
+    // Limit how frequently OTPs can be sent.
+    const now = Date.now();
+
+    if (
+      user.otpLastSentAt &&
+      now - new Date(user.otpLastSentAt).getTime() < 60 * 1000
+    ) {
+      return res.status(200).json(genericResponse);
+    }
+
+    // Generate secure OTP.
+    const otp = randomInt(100000, 1000000).toString();
+
+    user.otp = otp;
+    user.otpExpires = new Date(now + 5 * 60 * 1000);
+    user.otpAttempts = 0;
+    user.otpLastSentAt = new Date(now);
+
+    await user.save();
+
+    const sent = await sendEmail({
+      to: user.email,
+      subject: "Continue Your Paylynk Registration",
+      text: `Your Paylynk verification code is ${otp}. It expires in 5 minutes.`,
+      html: `
+        <div style="font-family:Arial,sans-serif;padding:20px">
+          <h2>Continue Your Paylynk Registration</h2>
+          <p>Use the following code to verify your email:</p>
+          <h1 style="letter-spacing:6px">${otp}</h1>
+          <p>This code expires in 5 minutes.</p>
+          <p>If you didn't request this, you can ignore this email.</p>
+        </div>
+      `,
+    });
+
+    if (!sent) {
+      console.error("Failed to send registration recovery OTP");
+
+      return res.status(200).json(genericResponse);
+    }
+
+    return res.status(200).json(genericResponse);
+  } catch (error) {
+    console.error("RESUME REGISTRATION ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to process registration recovery",
     });
   }
 };
