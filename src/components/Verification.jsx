@@ -40,16 +40,25 @@ console.log("otp:", otp);
       });
 
       const data = await res.json();
-      if (data.success) {
-
+    if (data.success) {
   localStorage.setItem("token", data.token);
-         localStorage.removeItem("tempEmail");
-  localStorage.removeItem("tempPhone");
 
+  if (data.user) {
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify(data.user)
+    );
+  }
+
+  localStorage.removeItem("userId");
+  localStorage.removeItem("tempEmail");
+  localStorage.removeItem("tempPhone");
 
   alert("Verification successful!");
 
-  navigate("/enter-bvn");
+  navigate(data.nextStep || "/enter-bvn", {
+    replace: true,
+  });
 
 } else {
   alert(data.message);
