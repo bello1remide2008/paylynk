@@ -14,6 +14,7 @@ const Signup = () => {
 
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+   const [showPassword, setShowPassword] = useState(false);
 
    const [form, setForm] = useState({
     email: "",
