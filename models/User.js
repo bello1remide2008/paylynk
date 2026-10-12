@@ -59,6 +59,15 @@ lastSeen: {
 otpExpires: {
   type: Date,
 },
+    otpAttempts: {
+  type: Number,
+  default: 0,
+},
+
+otpLastSentAt: {
+  type: Date,
+  default: null,
+},
     bvn: {
   type: String,
 },
