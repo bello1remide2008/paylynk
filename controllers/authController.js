@@ -38,14 +38,14 @@ export const registerInit = async (req, res, ) => {
     }
 
     // create user
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-      isVerified: false,
-    });
-
+   const user = await User.create({
+  name,
+  email: email.trim().toLowerCase(),
+  password,
+  phone: phone.trim(),
+  isVerified: false,
+  registrationStatus: "pending_email",
+});
     // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
