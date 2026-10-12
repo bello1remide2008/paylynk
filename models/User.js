@@ -84,6 +84,16 @@ virtualAccountBank: {
   type: String,
   default: "h",
 },
+    registrationStatus: {
+  type: String,
+  enum: [
+    "pending_email",
+    "pending_bank",
+    "pending_identity",
+    "completed",
+  ],
+  default: "pending_email",
+},
         resetPasswordToken: {
       type:String,
     resetPasswordExpire: Date,
