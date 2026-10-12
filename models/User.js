@@ -93,12 +93,13 @@ virtualAccountBank: {
   type: String,
   default: "h",
 },
-    registrationStatus: {
+   registrationStatus: {
   type: String,
   enum: [
     "pending_email",
-    "pending_bank",
     "pending_identity",
+    "pending_bank",
+    "pending_account_verification",
     "completed",
   ],
   default: "pending_email",
