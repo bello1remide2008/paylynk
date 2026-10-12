@@ -99,7 +99,7 @@ const Login = () => {
       );
 
       // Navigate to dashboard
-      navigate("/dashboard");
+      navigate( data.nextStep || "/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       alert(
