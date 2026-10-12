@@ -6,6 +6,7 @@ import {
   FaInstagram,
   FaLinkedin,
 } from "react-icons/fa";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import phone from "./phone.png";
 
 const Signup = () => {
