@@ -9,6 +9,7 @@ import {
   resetPassword,
   logoutUser,
   resumeRegistration,
+  verifyResumeOtp,
 } from "../controllers/authController.js";
 
 import {
@@ -23,6 +24,7 @@ const router = express.Router();
 // Registration
 router.post("/register-init", registerInit);
 router.post("/resume-registration", resumeRegistration);
+router.post("/verify-resume-otp", verifyResumeOtp);
 
 // Authentication
 router.post("/login", loginUser);
