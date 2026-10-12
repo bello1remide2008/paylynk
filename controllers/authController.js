@@ -170,7 +170,7 @@ export const verifyOtp = async (req, res) => {
     user.isVerified = true;
 
     // Move user to the next registration stage.
-    user.registrationStatus = "pending_bank";
+    user.registrationStatus = "pending_identity";
 
     // Clear OTP.
     user.otp = null;
@@ -182,19 +182,20 @@ export const verifyOtp = async (req, res) => {
     const token = generateToken(user._id);
 
     return res.status(200).json({
-      success: true,
-      message: "Email verified successfully",
-      token,
-      registrationStatus: user.registrationStatus,
-      nextStep: "/select-bank",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        isVerified: user.isVerified,
-      },
-    });
+  success: true,
+  message: "Email verified successfully",
+  token: generateToken(user._id),
+  registrationStatus: user.registrationStatus,
+  nextStep: "/enter-bvn",
+  user: {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    profileImage: user.profileImage,
+    registrationStatus: user.registrationStatus,
+  },
+});
   } catch (error) {
     console.error("VERIFY OTP ERROR:", error);
 
@@ -288,6 +289,89 @@ export const resumeRegistration = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to process registration recovery",
+    });
+  }
+};
+export const verifyResumeOtp = async (req, res) => {
+  try {
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
+
+    const otp = String(req.body.otp || "").trim();
+
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter your email and a valid 6-digit OTP",
+      });
+    }
+
+    const user = await User.findOne({
+      email,
+      isVerified: false,
+    });
+
+    if (!user || !user.otp || !user.otpExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    if (new Date(user.otpExpires).getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    if ((user.otpAttempts || 0) >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: "Too many attempts. Request a new code.",
+      });
+    }
+
+    if (String(user.otp) !== otp) {
+      user.otpAttempts = (user.otpAttempts || 0) + 1;
+      await user.save();
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    user.isVerified = true;
+    user.registrationStatus = "pending_identity";
+    user.otp = null;
+    user.otpExpires = null;
+    user.otpAttempts = 0;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      token: generateToken(user._id),
+      registrationStatus: user.registrationStatus,
+      nextStep: "/enter-bvn",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        profileImage: user.profileImage,
+        registrationStatus: user.registrationStatus,
+      },
+    });
+  } catch (error) {
+    console.error("VERIFY RESUME OTP ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to verify registration",
     });
   }
 };
