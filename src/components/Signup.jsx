@@ -140,7 +140,7 @@ const handleContinue = async (e) => {
         />
 <div className="relative">
         <input
-          type="password"
+             type={showPassword ? "text" : "password"}
           placeholder="Create Password"
           value={form.password}
           className="w-full px-4 py-3 rounded-full bg-[#10263f] border border-gray-600 text-white mb-4 focus:outline-none"
