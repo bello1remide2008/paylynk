@@ -261,6 +261,50 @@ const ContinueRegistration = () => {
           </button>
         </p>
       </div>
+      <div className="hidden lg:flex items-center justify-center bg-white px-10">
+        <div className="max-w-md">
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to take control of your finances?
+          </h2>
+
+          <p className="text-gray-600 mb-6">
+            Join over 500,000 users who have transformed their financial lives
+            with Paylynk. Download the app today and experience banking
+            reimagined.
+          </p>
+
+          <div className="flex gap-4">
+            <div
+              onClick={() =>
+                window.open("https://play.google.com/store/apps", "_blank")
+              }
+              className="bg-black px-5 py-3 rounded-lg cursor-pointer hover:opacity-80 transition"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                alt="Google Play"
+                className="h-10"
+              />
+            </div>
+
+            <div
+              className="bg-black px-5 py-3 rounded-lg cursor-pointer hover:opacity-80 transition"
+              onClick={() =>
+                window.open("https://www.apple.com/app-store/", "_blank")
+              }
+            >
+              <img
+                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                alt="App Store"
+                className="h-10"
+              />
+            </div>
+          </div>
+
+          {/* Phone Image */}
+          <img src={phone} alt="App preview" className="w-full mt-6" />
+        </div>
+      </div>
     </div>
   );
 };
