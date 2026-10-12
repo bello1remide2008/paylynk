@@ -103,15 +103,18 @@ export const registerInit = async (req, res, ) => {
 // ========================
 // VERIFY OTP
 // ========================
+// ======================================
+// VERIFY EMAIL OTP
+// ======================================
+
 export const verifyOtp = async (req, res) => {
   try {
     const { userId, otp } = req.body;
 
-    console.log("VERIFY BODY:", req.body);
-
     if (!userId || !otp) {
       return res.status(400).json({
-        message: "Missing fields",
+        success: false,
+        message: "User ID and OTP are required",
       });
     }
 
@@ -119,52 +122,85 @@ export const verifyOtp = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
 
-    console.log("DB OTP:", user.otp);
-    console.log("ENTERED OTP:", otp);
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already verified",
+      });
+    }
 
-    // OTP missing
     if (!user.otp || !user.otpExpires) {
       return res.status(400).json({
-        message: "OTP not found, request new one",
+        success: false,
+        message: "OTP not found. Request a new one.",
       });
     }
 
-    // OTP expired
-    if (user.otpExpires < Date.now()) {
+    if (new Date(user.otpExpires).getTime() < Date.now()) {
       return res.status(400).json({
-        message: "OTP expired",
+        success: false,
+        message: "OTP expired. Request a new one.",
       });
     }
 
-    // OTP incorrect
+    if ((user.otpAttempts || 0) >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: "Too many incorrect attempts. Request a new OTP.",
+      });
+    }
+
     if (String(user.otp) !== String(otp)) {
+      user.otpAttempts = (user.otpAttempts || 0) + 1;
+
+      await user.save();
+
       return res.status(400).json({
+        success: false,
         message: "Invalid OTP",
       });
     }
 
-    // verify user
+    // Email verified successfully.
     user.isVerified = true;
+
+    // Move user to the next registration stage.
+    user.registrationStatus = "pending_bank";
+
+    // Clear OTP.
     user.otp = null;
     user.otpExpires = null;
+    user.otpAttempts = 0;
 
     await user.save();
 
-    res.json({
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
       success: true,
-      message: "Account verified",
-      token: generateToken(user._id),
+      message: "Email verified successfully",
+      token,
+      registrationStatus: user.registrationStatus,
+      nextStep: "/select-bank",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isVerified: user.isVerified,
+      },
     });
-
   } catch (error) {
-    console.error("VERIFY ERROR:", error);
+    console.error("VERIFY OTP ERROR:", error);
 
-    res.status(500).json({
-      message: error.message,
+    return res.status(500).json({
+      success: false,
+      message: "Unable to verify OTP",
     });
   }
 };
@@ -327,22 +363,47 @@ export const loginUser = async (req, res) => {
      
     // 🔥 GENERATE TOKEN 
     const token = generateToken(user._id); 
+    const registrationStatus =
+  user.registrationStatus ||
+  (user.isVerified ? "completed" : "pending_email");
+
+let nextStep = "/dashboard";
+
+switch (registrationStatus) {
+  case "pending_bank":
+    nextStep = "/select-bank";
+    break;
+
+  case "pending_identity":
+    nextStep = "/enter-bvn";
+    break;
+
+  case "completed":
+    nextStep = "/dashboard";
+    break;
+
+  default:
+    nextStep = "/dashboard";
+}
  
-    // 🔥 SUCCESS RESPONSE 
-    return res.status(200).json({ 
-      success: true, 
-      message: "Login successful", 
-      token, 
-      user: { 
-        _id: user._id, 
-        name: user.name, 
-        email: user.email, 
-        phone: user.phone, 
-        username: user.username, 
-        role: user.role, 
-        profileImage: user.profileImage, 
-      }, 
-    }); 
+  return res.status(200).json({
+  success: true,
+  message: "Login successful",
+  token,
+  registrationStatus,
+  nextStep,
+
+  user: {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    username: user.username,
+    role: user.role,
+    profileImage: user.profileImage,
+    registrationStatus,
+  },
+});
  
   } catch (error) { 
     console.error("LOGIN ERROR:", error); 
