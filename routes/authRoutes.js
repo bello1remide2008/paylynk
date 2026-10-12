@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   registerInit,
   loginUser,
@@ -6,37 +7,41 @@ import {
   resendOtp,
   forgotPassword,
   resetPassword,
-  logoutUser
+  logoutUser,
+  resumeRegistration,
 } from "../controllers/authController.js";
+
 import {
   updateProfileImage,
   uploadProfileImageMiddleware,
 } from "../controllers/profileImageController.js";
 
-
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/**
- * AUTH ROUTES (EMAIL OTP SYSTEM)
- */
+// Registration
+router.post("/register-init", registerInit);
+router.post("/resume-registration", resumeRegistration);
 
-// Register user + send email OTP
-router.post("/register-init",   registerInit);
+// Authentication
+router.post("/login", loginUser);
+router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOtp);
 
-// Login user
-router.post("/login",   loginUser);
+// Password recovery
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password/:token", resetPassword);
 
-// Verify OTP (email-based)
-router.post("/verify-otp",  verifyOtp);
-router.post("/resend-otp",   resendOtp);
-router.post("/forgot-password",  forgotPassword);
+// Logout
+router.post("/logout", logoutUser);
 
-router.put("/reset-password/:token",   resetPassword);
-router.post("/logout",   logoutUser);
+// Profile picture
 router.put(
   "/profile-image",
+  protect,
   uploadProfileImageMiddleware,
   updateProfileImage
+);
 
 export default router;
