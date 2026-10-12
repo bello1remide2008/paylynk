@@ -153,6 +153,19 @@ const handleContinue = async (e) => {
           >
             Continue
           </button>
+          <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
+  <p className="mb-3 text-sm text-gray-300">
+    Started registering before but didn't finish?
+  </p>
+
+  <button
+    type="button"
+    onClick={() => navigate("/continue-registration")}
+    className="w-full rounded-full border border-orange-400 px-4 py-3 font-semibold text-orange-400 transition hover:bg-orange-500 hover:text-white"
+  >
+    Continue Registration
+  </button>
+</div>
 
           <p className="text-sm text-gray-400 mt-4">
             Already have an account?{" "}
