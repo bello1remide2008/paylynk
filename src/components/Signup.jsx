@@ -137,7 +137,7 @@ const handleContinue = async (e) => {
             setForm({ ...form, email: e.target.value })
           }
         />
-
+<div className="relative">
         <input
           type="password"
           placeholder="Create Password"
@@ -147,6 +147,19 @@ const handleContinue = async (e) => {
             setForm({ ...form, password: e.target.value })
           }
         />
+               <button
+                  type="button"
+                  onClick={() => setShowPassword((previous) => !previous)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-white"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </button>
+</div>
           <button
             onClick={handleContinue}
             className="w-full bg-orange-500 hover:bg-orange-600 py-3 rounded-full font-semibold"
