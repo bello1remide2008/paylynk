@@ -678,19 +678,366 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // FRONTEND RESET LINK
-    const resetUrl = `https://paylynk-fsfg-h4i7mbh8r-bello-iremides-projects.vercel.app/reset-password/${resetToken}`;
+    
+    const frontendUrl = (
+      process.env.FRONTEND_URL || "https://www.paylynkds.com"
+    ).replace(/\/+$/, "");
 
+    const resetUrl =
+      `${frontendUrl}/reset-password/${resetToken}`;
     // EMAIL MESSAGE
     const message = `
-You requested a password reset.
+Hello ${user.name || "there"},
 
-Click the link below:
+We received a request to reset the password associated with your Paylynk account.
+
+To choose a new password, open the secure link below:
+
 ${resetUrl}
 
-This link expires in 15 minutes.
+IMPORTANT SECURITY INFORMATION
 
-If you did not request this, ignore this email.
+- This password reset link expires in 15 minutes.
+- The link can only be used once.
+- Never share this link with anyone.
+- Paylynk will never ask you to disclose your password through email.
+- If you did not request this password reset, you can safely ignore this message.
+
+For your protection, your existing password will remain unchanged unless you complete the password reset process.
+
+Thank you for choosing Paylynk.
+
+The Paylynk Security Team
+Your money. Your control. Your Paylynk.
 `;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Your Paylynk Password</title>
+</head>
+
+<body style="
+  margin: 0;
+  padding: 0;
+  background-color: #f1f5f9;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172033;
+">
+
+  <div style="
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  ">
+    Securely reset your Paylynk account password. This link expires in 15 minutes.
+  </div>
+
+  <table
+    role="presentation"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    style="background-color: #f1f5f9; padding: 35px 12px;"
+  >
+    <tr>
+      <td align="center">
+
+        <table
+          role="presentation"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          style="
+            max-width: 600px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+          "
+        >
+
+          <!-- BRAND HEADER -->
+          <tr>
+            <td style="
+              background-color: #0b1c2d;
+              padding: 30px 35px;
+              text-align: center;
+            ">
+              <h1 style="
+                margin: 0;
+                color: #ffffff;
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: 1px;
+              ">
+                Paylynk<span style="color: #f97316;">.</span>
+              </h1>
+
+              <p style="
+                margin: 9px 0 0;
+                color: #cbd5e1;
+                font-size: 13px;
+              ">
+                Your money. Your control.
+              </p>
+            </td>
+          </tr>
+
+          <!-- EMAIL CONTENT -->
+          <tr>
+            <td style="padding: 38px 35px 25px;">
+
+              <p style="
+                margin: 0 0 12px;
+                color: #64748b;
+                font-size: 14px;
+              ">
+                ACCOUNT SECURITY
+              </p>
+
+              <h2 style="
+                margin: 0 0 18px;
+                color: #0b1c2d;
+                font-size: 27px;
+                line-height: 1.3;
+              ">
+                Reset your password
+              </h2>
+
+              <p style="
+                margin: 0 0 18px;
+                color: #475569;
+                font-size: 15px;
+                line-height: 1.8;
+              ">
+                Hello ${escapeHtml(user.name || "there")},
+              </p>
+
+              <p style="
+                margin: 0 0 18px;
+                color: #475569;
+                font-size: 15px;
+                line-height: 1.8;
+              ">
+                We received a request to reset the password associated
+                with your Paylynk account.
+              </p>
+
+              <p style="
+                margin: 0 0 25px;
+                color: #475569;
+                font-size: 15px;
+                line-height: 1.8;
+              ">
+                If you made this request, click the button below to
+                securely create a new password and regain access to
+                your account.
+              </p>
+
+              <!-- RESET BUTTON -->
+              <table
+                role="presentation"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                align="center"
+                style="margin: 0 auto 25px;"
+              >
+                <tr>
+                  <td
+                    align="center"
+                    bgcolor="#f97316"
+                    style="border-radius: 9px;"
+                  >
+                    <a
+                      href="${resetUrl}"
+                      style="
+                        display: inline-block;
+                        padding: 16px 32px;
+                        color: #ffffff;
+                        font-size: 15px;
+                        font-weight: bold;
+                        text-decoration: none;
+                        border-radius: 9px;
+                      "
+                    >
+                      Reset My Password
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- EXPIRATION NOTICE -->
+              <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                  background-color: #fff7ed;
+                  border-left: 4px solid #f97316;
+                  border-radius: 6px;
+                "
+              >
+                <tr>
+                  <td style="padding: 16px 18px;">
+
+                    <p style="
+                      margin: 0 0 8px;
+                      color: #9a3412;
+                      font-size: 14px;
+                      font-weight: bold;
+                    ">
+                      Important: This link expires in 15 minutes.
+                    </p>
+
+                    <p style="
+                      margin: 0;
+                      color: #9a3412;
+                      font-size: 13px;
+                      line-height: 1.7;
+                    ">
+                      For your security, this link is intended for
+                      one-time use. If it expires, you will need to
+                      request another password reset.
+                    </p>
+
+                  </td>
+                </tr>
+              </table>
+
+              <!-- FALLBACK LINK -->
+              <p style="
+                margin: 28px 0 10px;
+                color: #475569;
+                font-size: 13px;
+                line-height: 1.7;
+              ">
+                If the button above does not work, copy and paste the
+                following link into your browser:
+              </p>
+
+              <p style="
+                margin: 0 0 25px;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+                font-size: 12px;
+                line-height: 1.8;
+              ">
+                <a
+                  href="${resetUrl}"
+                  style="color: #ea580c;"
+                >
+                  ${resetUrl}
+                </a>
+              </p>
+
+              <!-- SECURITY NOTICE -->
+              <div style="
+                border-top: 1px solid #e2e8f0;
+                padding-top: 22px;
+              ">
+
+                <h3 style="
+                  margin: 0 0 12px;
+                  color: #0b1c2d;
+                  font-size: 16px;
+                ">
+                  Didn't request this change?
+                </h3>
+
+                <p style="
+                  margin: 0 0 12px;
+                  color: #64748b;
+                  font-size: 13px;
+                  line-height: 1.8;
+                ">
+                  No action is required if you did not request a password
+                  reset. Your password will remain unchanged unless
+                  someone successfully completes the reset process.
+                </p>
+
+                <p style="
+                  margin: 0;
+                  color: #64748b;
+                  font-size: 13px;
+                  line-height: 1.8;
+                ">
+                  Never share your password or password reset link with
+                  anyone. Paylynk will never ask you to send these
+                  details to us by email.
+                </p>
+
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="
+              padding: 25px 30px;
+              background-color: #f8fafc;
+              text-align: center;
+              border-top: 1px solid #e2e8f0;
+            ">
+
+              <p style="
+                margin: 0 0 8px;
+                color: #0b1c2d;
+                font-size: 14px;
+                font-weight: bold;
+              ">
+                The Paylynk Security Team
+              </p>
+
+              <p style="
+                margin: 0 0 12px;
+                color: #64748b;
+                font-size: 12px;
+                line-height: 1.7;
+              ">
+                Protecting your account is our priority.
+              </p>
+
+              <p style="
+                margin: 0;
+                color: #94a3b8;
+                font-size: 11px;
+                line-height: 1.7;
+              ">
+                This is an automated security message. Please do not
+                reply directly to this email.
+              </p>
+
+              <p style="
+                margin: 15px 0 0;
+                color: #94a3b8;
+                font-size: 11px;
+              ">
+                &copy; ${new Date().getFullYear()} Paylynk. All rights reserved.
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+`;
+
 
     // SEND EMAIL WITH ERROR HANDLING
     try {
