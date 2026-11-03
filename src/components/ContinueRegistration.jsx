@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, ShieldCheck } from "lucide-react";
+import phone from "./phone.png";
 
 const API_URL = "https://paylynk-1.onrender.com/api/auth";
 
