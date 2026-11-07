@@ -223,9 +223,16 @@ export const verifyOtp = async (req, res) => {
 // CONTINUE INCOMPLETE REGISTRATION
 // ======================================
 
+
 export const resumeRegistration = async (req, res) => {
+  const genericResponse = {
+    success: true,
+    message:
+      "If an eligible registration exists, a verification code will be sent.",
+  };
+
   try {
-    const email = String(req.body.email || "")
+    const email = String(req.body?.email || "")
       .trim()
       .toLowerCase();
 
@@ -238,67 +245,431 @@ export const resumeRegistration = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    // Generic response to avoid exposing whether an email is registered.
-    const genericResponse = {
-      success: true,
-      message:
-        "If an eligible registration exists, a verification code will be sent.",
-    };
-
+    // Do not reveal whether an account exists.
     if (!user) {
+      console.log("Registration recovery: no eligible account");
       return res.status(200).json(genericResponse);
     }
 
-    // Users who already verified their email should sign in.
-    // Their remaining registration steps will be handled after login.
+    // Already verified users should sign in.
     if (user.isVerified) {
+      console.log("Registration recovery: account already verified");
       return res.status(200).json(genericResponse);
     }
 
-    // Limit how frequently OTPs can be sent.
     const now = Date.now();
 
+    // Prevent repeated OTP requests.
     if (
       user.otpLastSentAt &&
-      now - new Date(user.otpLastSentAt).getTime() < 60 * 1000
+      now - new Date(user.otpLastSentAt).getTime() < 60000
     ) {
+      console.log("Registration recovery: OTP cooldown active");
       return res.status(200).json(genericResponse);
     }
 
-    // Generate secure OTP.
+    // Generate secure six-digit OTP.
     const otp = randomInt(100000, 1000000).toString();
 
+    const otpExpiry = new Date(now + 5 * 60 * 1000);
+
+    // Save OTP details.
     user.otp = otp;
-    user.otpExpires = new Date(now + 5 * 60 * 1000);
+    user.otpExpires = otpExpiry;
     user.otpAttempts = 0;
     user.otpLastSentAt = new Date(now);
 
     await user.save();
 
-    const sent = await sendEmail({
-      to: user.email,
-      subject: "Continue Your Paylynk Registration",
-      text: `Your Paylynk verification code is ${otp}. It expires in 5 minutes.`,
-      html: `
-        <div style="font-family:Arial,sans-serif;padding:20px">
-          <h2>Continue Your Paylynk Registration</h2>
-          <p>Use the following code to verify your email:</p>
-          <h1 style="letter-spacing:6px">${otp}</h1>
-          <p>This code expires in 5 minutes.</p>
-          <p>If you didn't request this, you can ignore this email.</p>
-        </div>
-      `,
-    });
+    // Escape user-controlled content for HTML.
+    const escapeHtml = (value = "") =>
+      String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[char]);
 
-    if (!sent) {
-      console.error("Failed to send registration recovery OTP");
+    const userName = escapeHtml(user.name || "there");
 
+    const text = `
+Hello ${user.name || "there"},
+
+Welcome back to Paylynk!
+
+We received a request to continue your Paylynk registration.
+
+YOUR VERIFICATION CODE
+
+${otp}
+
+This verification code expires in 5 minutes.
+
+SECURITY INFORMATION
+
+- Never share this code with anyone.
+- Paylynk will never ask you for your OTP.
+- This code is intended for your registration only.
+- If you did not request this code, ignore this email.
+
+Once your email has been verified, you can continue setting up your Paylynk account.
+
+Thank you for choosing Paylynk.
+
+The Paylynk Security Team
+Your money. Your control. Your Paylynk.
+`;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>Continue Your Paylynk Registration</title>
+</head>
+
+<body style="
+  margin:0;
+  padding:0;
+  background:#f1f5f9;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#172033;
+">
+
+<table role="presentation"
+       width="100%"
+       cellpadding="0"
+       cellspacing="0"
+       border="0"
+       style="background:#f1f5f9;padding:35px 12px;">
+
+<tr>
+<td align="center">
+
+<table role="presentation"
+       width="100%"
+       cellpadding="0"
+       cellspacing="0"
+       border="0"
+       style="
+         max-width:600px;
+         background:#ffffff;
+         border-radius:16px;
+       ">
+
+<!-- BRAND HEADER -->
+
+<tr>
+<td align="center"
+    style="
+      background:#0b1c2d;
+      padding:32px 25px;
+      border-radius:16px 16px 0 0;
+    ">
+
+<h1 style="
+  color:#ffffff;
+  font-size:32px;
+  font-weight:800;
+  margin:0;
+">
+Paylynk<span style="color:#f97316;">.</span>
+</h1>
+
+<p style="
+  color:#cbd5e1;
+  font-size:13px;
+  margin:10px 0 0;
+">
+Your money. Your control.
+</p>
+
+</td>
+</tr>
+
+<!-- EMAIL BODY -->
+
+<tr>
+<td style="padding:35px 30px;">
+
+<p style="
+  font-size:12px;
+  color:#ea580c;
+  font-weight:bold;
+  letter-spacing:1px;
+">
+ACCOUNT VERIFICATION
+</p>
+
+<h2 style="
+  color:#0b1c2d;
+  font-size:26px;
+  margin:12px 0 22px;
+">
+Continue Your Registration
+</h2>
+
+<p style="
+  color:#475569;
+  font-size:15px;
+  line-height:1.8;
+">
+Hello ${userName},
+</p>
+
+<p style="
+  color:#475569;
+  font-size:15px;
+  line-height:1.8;
+">
+Welcome back to Paylynk!
+</p>
+
+<p style="
+  color:#475569;
+  font-size:15px;
+  line-height:1.8;
+">
+We received a request to continue setting up
+your Paylynk account.
+
+To proceed, please verify your email address
+using the secure verification code below.
+</p>
+
+<!-- OTP BOX -->
+
+<table role="presentation"
+       width="100%"
+       cellpadding="0"
+       cellspacing="0"
+       style="margin:30px 0;">
+
+<tr>
+<td align="center"
+    style="
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      border-radius:12px;
+      padding:28px 15px;
+    ">
+
+<p style="
+  margin:0 0 14px;
+  color:#9a3412;
+  font-size:13px;
+  font-weight:bold;
+">
+YOUR VERIFICATION CODE
+</p>
+
+<h1 style="
+  margin:0;
+  color:#0b1c2d;
+  font-size:38px;
+  letter-spacing:8px;
+  font-weight:800;
+">
+${otp}
+</h1>
+
+<p style="
+  margin:16px 0 0;
+  color:#9a3412;
+  font-size:13px;
+">
+This code expires in 5 minutes.
+</p>
+
+</td>
+</tr>
+</table>
+
+<p style="
+  color:#475569;
+  font-size:14px;
+  line-height:1.8;
+">
+Enter this code on the Paylynk verification
+page to continue your registration.
+</p>
+
+<!-- SECURITY NOTICE -->
+
+<table role="presentation"
+       width="100%"
+       cellpadding="0"
+       cellspacing="0"
+       style="margin-top:25px;">
+
+<tr>
+<td style="
+  background:#f8fafc;
+  border-left:4px solid #f97316;
+  padding:20px;
+">
+
+<h3 style="
+  color:#0b1c2d;
+  margin:0 0 12px;
+  font-size:16px;
+">
+Important Security Information
+</h3>
+
+<p style="
+  color:#64748b;
+  font-size:13px;
+  line-height:1.9;
+  margin:0;
+">
+• Never share your verification code.<br>
+• Paylynk will never request your OTP.<br>
+• Your code expires after 5 minutes.<br>
+• Only use this code on the official Paylynk website.
+</p>
+
+</td>
+</tr>
+</table>
+
+<!-- UNREQUESTED EMAIL -->
+
+<h3 style="
+  color:#0b1c2d;
+  margin-top:30px;
+  font-size:16px;
+">
+Didn't request this email?
+</h3>
+
+<p style="
+  color:#64748b;
+  font-size:13px;
+  line-height:1.8;
+">
+If you did not request to continue your
+Paylynk registration, you can safely ignore
+this email.
+
+Your account will not be verified unless
+the correct verification code is entered.
+</p>
+
+<p style="
+  color:#475569;
+  font-size:14px;
+  margin-top:25px;
+">
+Thank you for choosing Paylynk.
+</p>
+
+<p style="
+  color:#0b1c2d;
+  font-size:14px;
+  font-weight:bold;
+">
+The Paylynk Security Team
+</p>
+
+</td>
+</tr>
+
+<!-- FOOTER -->
+
+<tr>
+<td align="center"
+    style="
+      background:#f8fafc;
+      padding:25px;
+      border-top:1px solid #e2e8f0;
+      border-radius:0 0 16px 16px;
+    ">
+
+<p style="
+  color:#64748b;
+  font-size:12px;
+  line-height:1.7;
+">
+This is an automated security notification
+from Paylynk.
+</p>
+
+<p style="
+  color:#94a3b8;
+  font-size:11px;
+">
+&copy; ${new Date().getFullYear()} Paylynk.
+All rights reserved.
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>
+`;
+
+    // SEND EMAIL
+    try {
+      const emailResult = await sendEmail({
+        to: user.email,
+        subject: "Paylynk | Continue Your Registration",
+        text,
+        html,
+      });
+
+      if (emailResult === false || emailResult == null) {
+        throw new Error("Email service returned no delivery result");
+      }
+
+      console.log(
+        "Registration recovery email accepted:",
+        emailResult
+      );
+
+    } catch (emailError) {
+      console.error(
+        "Registration recovery email failed:",
+        emailError
+      );
+
+      // Clear OTP cooldown so the user can retry.
+      // Do not clear a newer OTP created by another request.
+      await User.updateOne(
+        {
+          _id: user._id,
+          otp,
+        },
+        {
+          $unset: {
+            otp: "",
+            otpExpires: "",
+            otpLastSentAt: "",
+          },
+        }
+      );
+
+      // Preserve the generic response.
       return res.status(200).json(genericResponse);
     }
 
     return res.status(200).json(genericResponse);
+
   } catch (error) {
-    console.error("RESUME REGISTRATION ERROR:", error);
+    console.error(
+      "RESUME REGISTRATION ERROR:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -306,89 +677,7 @@ export const resumeRegistration = async (req, res) => {
     });
   }
 };
-export const verifyResumeOtp = async (req, res) => {
-  try {
-    const email = String(req.body.email || "")
-      .trim()
-      .toLowerCase();
 
-    const otp = String(req.body.otp || "").trim();
-
-    if (!email || !/^\d{6}$/.test(otp)) {
-      return res.status(400).json({
-        success: false,
-        message: "Enter your email and a valid 6-digit OTP",
-      });
-    }
-
-    const user = await User.findOne({
-      email,
-      isVerified: false,
-    });
-
-    if (!user || !user.otp || !user.otpExpires) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
-    }
-
-    if (new Date(user.otpExpires).getTime() < Date.now()) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
-    }
-
-    if ((user.otpAttempts || 0) >= 5) {
-      return res.status(429).json({
-        success: false,
-        message: "Too many attempts. Request a new code.",
-      });
-    }
-
-    if (String(user.otp) !== otp) {
-      user.otpAttempts = (user.otpAttempts || 0) + 1;
-      await user.save();
-
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
-    }
-
-    user.isVerified = true;
-    user.registrationStatus = "pending_identity";
-    user.otp = null;
-    user.otpExpires = null;
-    user.otpAttempts = 0;
-
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Email verified successfully",
-      token: generateToken(user._id),
-      registrationStatus: user.registrationStatus,
-      nextStep: "/enter-bvn",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        profileImage: user.profileImage,
-        registrationStatus: user.registrationStatus,
-      },
-    });
-  } catch (error) {
-    console.error("VERIFY RESUME OTP ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Unable to verify registration",
-    });
-  }
-};
 
 // ========================
 // LOGIN
