@@ -6,6 +6,20 @@ import { randomInt } from "node:crypto";
 
 import crypto from "crypto";
 
+const escapeHtml = (value = "") => {
+  return String(value).replace(/[&<>"']/g, (char) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entities[char];
+  });
+};
+
 
 
 // ========================
