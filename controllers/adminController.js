@@ -58,6 +58,9 @@ export const getUserDetails = async (req, res) => {
 
 export const getAdminStats = async (req, res) => {
   try {
+    const last24Hours = new Date(
+  Date.now() - 24 * 60 * 60 * 1000
+);
     const totalUsers =
 await User.countDocuments();
 
@@ -267,72 +270,70 @@ export const getAnalytics = async (req, res) => {
     // REVENUE TREND
     // =========================
 
-    const revenueTrend = await Transaction.aggregate([
-      {
-        $match: {
-          status: "success",
-        },
-      },
-      {
-        $group: {
-          _id: {
-            $month: "$createdAt",
-          },
-          amount: {
-            $sum: "$amount",
-          },
-        },
-      },
-      {
-        $sort: {
-          _id: 1,
-        },
-      },
-    ]);
+ 
+const revenueTrend = await Transaction.aggregate([
+  {
+    $match: {
+      status: "success",
+      createdAt: { $gte: startOfYear },
+    },
+  },
+  {
+    $group: {
+      _id: { $month: "$createdAt" },
+      amount: { $sum: "$amount" },
+    },
+  },
+  {
+    $sort: { _id: 1 },
+  },
+]);
 
-    const formattedRevenue = revenueTrend.map((item) => ({
-      month: months[item._id - 1],
-      amount: item.amount,
-    }));
+const formattedRevenue = revenueTrend.map(
+  (item) => ({
+    month: months[item._id - 1],
+    amount: item.amount,
+  })
+);
+
+
+   
 
     // =========================
     // LAST 7 DAYS TRANSACTIONS
     // =========================
 
-    const transactionTrend =
-      await Transaction.aggregate([
-        {
-          $match: {
-            createdAt: {
-              $gte: sevenDaysAgo,
-            },
-          },
+  
+const transactionTrend = await Transaction.aggregate([
+  {
+    $match: {
+      createdAt: { $gte: sevenDaysAgo },
+    },
+  },
+  {
+    $group: {
+      _id: {
+        $dateToString: {
+          format: "%Y-%m-%d",
+          date: "$createdAt",
+          timezone: "Africa/Lagos",
         },
-        {
-          $group: {
-            _id: {
-              $dateToString: {
-                format: "%d %b",
-                date: "$createdAt",
-              },
-            },
-            transactions: {
-              $sum: 1,
-            },
-          },
-        },
-        {
-          $sort: {
-            _id: 1,
-          },
-        },
-      ]);
+      },
+      transactions: { $sum: 1 },
+    },
+  },
+  {
+    $sort: { _id: 1 },
+  },
+]);
 
-    const formattedTransactions =
-      transactionTrend.map((item) => ({
-        day: item._id,
-        transactions: item.transactions,
-      }));
+const formattedTransactions = transactionTrend.map(
+  (item) => ({
+    day: item._id,
+    transactions: item.transactions,
+  })
+);
+
 
     // =========================
     // TODAY'S REVENUE
