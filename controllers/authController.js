@@ -679,6 +679,170 @@ All rights reserved.
 };
 
 
+export const verifyResumeOtp = async (req, res) => {
+  try {
+    const email = String(req.body?.email || "")
+      .trim()
+      .toLowerCase();
+
+    const otp = String(req.body?.otp || "").trim();
+
+    // Validate inputs
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid email and 6-digit OTP are required.",
+      });
+    }
+
+    // Find account
+    const user = await User.findOne({ email })
+      .select(
+        "+otp +otpExpires +otpAttempts"
+      );
+
+    if (!user || user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    // Check OTP expiry
+    if (
+      !user.otp ||
+      !user.otpExpires ||
+      new Date(user.otpExpires).getTime() <= Date.now()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    // Limit incorrect attempts
+    const attempts = Number(user.otpAttempts || 0);
+
+    if (attempts >= 5) {
+      return res.status(429).json({
+        success: false,
+        message:
+          "Too many incorrect attempts. Request a new code.",
+      });
+    }
+
+    // Timing-safe OTP comparison
+    const submittedHash = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest();
+
+    const storedHash = crypto
+      .createHash("sha256")
+      .update(String(user.otp))
+      .digest();
+
+    if (
+      !crypto.timingSafeEqual(
+        submittedHash,
+        storedHash
+      )
+    ) {
+      await User.updateOne(
+        {
+          _id: user._id,
+          otp: user.otp,
+          otpAttempts: { $lt: 5 },
+        },
+        {
+          $inc: { otpAttempts: 1 },
+        }
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    // Atomically consume OTP to prevent reuse
+    const verifiedUser = await User.findOneAndUpdate(
+      {
+        _id: user._id,
+        isVerified: { $ne: true },
+        otp: user.otp,
+        otpExpires: { $gt: new Date() },
+        otpAttempts: { $lt: 5 },
+      },
+      {
+        $set: {
+          isVerified: true,
+        },
+        $unset: {
+          otp: "",
+          otpExpires: "",
+          otpAttempts: "",
+          otpLastSentAt: "",
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!verifiedUser) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Verification code has expired or was already used.",
+      });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not configured");
+    }
+
+    // Create authentication token
+    const token = jwt.sign(
+      {
+        id: verifiedUser._id.toString(),
+        role: "user",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    // Default next registration step
+    const nextStep = "/enter-bvn";
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully.",
+      token,
+      nextStep,
+      user: {
+        _id: verifiedUser._id,
+        name: verifiedUser.name,
+        email: verifiedUser.email,
+        phone: verifiedUser.phone,
+        isVerified: verifiedUser.isVerified,
+        role: verifiedUser.role || "user",
+      },
+    });
+
+  } catch (error) {
+    console.error("VERIFY RESUME OTP ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Unable to verify your registration code.",
+    });
+  }
+};
+
 
 
 
