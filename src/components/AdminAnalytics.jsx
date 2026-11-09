@@ -24,41 +24,57 @@ const AdminAnalytics = () => {
 
   const adminToken = localStorage.getItem("adminToken");
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const res = await fetch(
-          "https://paylynk-1.onrender.com/api/admin/analytics",
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-            },
-          }
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("adminToken");
+
+      if (!token) {
+        throw new Error("Admin authentication required");
+      }
+
+      const res = await fetch(
+        "https://paylynk-1.onrender.com/api/admin/analytics",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `Analytics request failed: ${res.status}`
         );
+      }
 
-        const data = await res.json();
+      const data = await res.json();
 
+      if (!controller.signal.aborted) {
         setAnalytics(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Analytics error:", error);
+      }
+    } finally {
+      if (!controller.signal.aborted) {
         setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchAnalytics();
-  }, []);
+  fetchAnalytics();
 
-  if (loading) {
-    return (
-      <div>
-        <AdminNavbar />
-        <div className="flex justify-center items-center h-screen">
-          Loading Analytics...
-        </div>
-      </div>
-    );
-  }
+  return () => controller.abort();
+}, []);
+
 
   const monthlyUsers = analytics.monthlyUsers || [];
   const transactionTrend = analytics.transactionTrend || [];
@@ -198,23 +214,29 @@ const AdminAnalytics = () => {
               Verification Status
             </h2>
 
-            <PieChart width={400} height={320}>
-              <Pie
-                data={verificationData}
-                dataKey="value"
-                label
-              >
-                {verificationData.map((entry, index) => (
-                  <Cell
-                    key={index}
-                    fill={COLORS[index]}
-                  />
-                ))}
-              </Pie>
+<ResponsiveContainer width="100%" height={320}>
+  <PieChart>
+    <Pie
+      data={verificationData}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      outerRadius={100}
+      label
+    >
+      {verificationData.map((entry, index) => (
+        <Cell
+          key={entry.name}
+          fill={COLORS[index % COLORS.length]}
+        />
+      ))}
+    </Pie>
+    <Tooltip />
+    <Legend />
+  </PieChart>
+</ResponsiveContainer>
 
-              <Tooltip />
-              <Legend />
-            </PieChart>
 
           </div>
 
