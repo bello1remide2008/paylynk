@@ -679,6 +679,7 @@ All rights reserved.
 };
 
 
+
 export const verifyResumeOtp = async (req, res) => {
   try {
     const email = String(req.body?.email || "")
@@ -687,7 +688,6 @@ export const verifyResumeOtp = async (req, res) => {
 
     const otp = String(req.body?.otp || "").trim();
 
-    // Validate inputs
     if (!email || !/^\d{6}$/.test(otp)) {
       return res.status(400).json({
         success: false,
@@ -695,20 +695,15 @@ export const verifyResumeOtp = async (req, res) => {
       });
     }
 
-    // Find account
-    const user = await User.findOne({ email })
-      .select(
-        "+otp +otpExpires +otpAttempts"
-      );
+    const user = await User.findOne({ email });
 
-    if (!user || user.isVerified) {
+    if (!user || user.isVerified || user.isBlocked) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired verification code.",
       });
     }
 
-    // Check OTP expiry
     if (
       !user.otp ||
       !user.otpExpires ||
@@ -720,34 +715,16 @@ export const verifyResumeOtp = async (req, res) => {
       });
     }
 
-    // Limit incorrect attempts
-    const attempts = Number(user.otpAttempts || 0);
-
-    if (attempts >= 5) {
+    if (Number(user.otpAttempts || 0) >= 5) {
       return res.status(429).json({
         success: false,
-        message:
-          "Too many incorrect attempts. Request a new code.",
+        message: "Too many attempts. Request a new code.",
       });
     }
 
-    // Timing-safe OTP comparison
-    const submittedHash = crypto
-      .createHash("sha256")
-      .update(otp)
-      .digest();
-
-    const storedHash = crypto
-      .createHash("sha256")
-      .update(String(user.otp))
-      .digest();
-
-    if (
-      !crypto.timingSafeEqual(
-        submittedHash,
-        storedHash
-      )
-    ) {
+    // Compare the OTP against the stored value.
+    // This matches your current resumeRegistration sender.
+    if (String(user.otp) !== otp) {
       await User.updateOne(
         {
           _id: user._id,
@@ -765,11 +742,12 @@ export const verifyResumeOtp = async (req, res) => {
       });
     }
 
-    // Atomically consume OTP to prevent reuse
+    // Consume the OTP atomically so it cannot be reused.
     const verifiedUser = await User.findOneAndUpdate(
       {
         _id: user._id,
         isVerified: { $ne: true },
+        isBlocked: { $ne: true },
         otp: user.otp,
         otpExpires: { $gt: new Date() },
         otpAttempts: { $lt: 5 },
@@ -777,6 +755,7 @@ export const verifyResumeOtp = async (req, res) => {
       {
         $set: {
           isVerified: true,
+          registrationStatus: "pending_identity",
         },
         $unset: {
           otp: "",
@@ -793,8 +772,7 @@ export const verifyResumeOtp = async (req, res) => {
     if (!verifiedUser) {
       return res.status(400).json({
         success: false,
-        message:
-          "Verification code has expired or was already used.",
+        message: "Verification code expired or already used.",
       });
     }
 
@@ -802,7 +780,6 @@ export const verifyResumeOtp = async (req, res) => {
       throw new Error("JWT_SECRET is not configured");
     }
 
-    // Create authentication token
     const token = jwt.sign(
       {
         id: verifiedUser._id.toString(),
@@ -814,37 +791,30 @@ export const verifyResumeOtp = async (req, res) => {
       }
     );
 
-    // Default next registration step
-    const nextStep = "/enter-bvn";
-
     return res.status(200).json({
       success: true,
       message: "Email verified successfully.",
       token,
-      nextStep,
+      nextStep: "/enter-bvn",
       user: {
         _id: verifiedUser._id,
         name: verifiedUser.name,
         email: verifiedUser.email,
         phone: verifiedUser.phone,
+        role: verifiedUser.role,
         isVerified: verifiedUser.isVerified,
-        role: verifiedUser.role || "user",
+        registrationStatus: verifiedUser.registrationStatus,
       },
     });
-
   } catch (error) {
     console.error("VERIFY RESUME OTP ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to verify your registration code.",
+      message: "Unable to verify registration.",
     });
   }
 };
-
-
-
 
 
 // ========================
