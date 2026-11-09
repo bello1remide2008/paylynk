@@ -14,92 +14,153 @@ const AdminDashboard = () => {
 
   
   // 🔹 Fetch dashboard stats
- useEffect(() => {
-  const adminToken = localStorage.getItem("adminToken");
+ 
+useEffect(() => {
+  const token = localStorage.getItem("adminToken");
 
-  if (!adminToken) {
+  if (!token) {
+    navigate("/admin-login", { replace: true });
+    return;
+  }
+
+  let cancelled = false;
+
+  const fetchDashboard = async () => {
+    setLoading(true);
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const [statsResult, activityResult] =
+        await Promise.allSettled([
+          fetch(
+            "https://paylynk-1.onrender.com/api/admin/stats",
+            { headers }
+          ),
+          fetch(
+            "https://paylynk-1.onrender.com/api/admin/activity",
+            { headers }
+          ),
+        ]);
+
+      if (cancelled) return;
+
+      if (statsResult.status === "fulfilled") {
+        const response = statsResult.value;
+
+        if (response.status === 401 ||
+            response.status === 403) {
+          localStorage.removeItem("adminToken");
+          navigate("/admin-login", { replace: true });
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            `Stats request failed: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) setStats(data);
+      } else {
+        console.error(
+          "Stats request failed:",
+          statsResult.reason
+        );
+      }
+
+      if (activityResult.status === "fulfilled") {
+        const response = activityResult.value;
+
+        if (response.ok) {
+          const data = await response.json();
+
+          if (!cancelled) {
+            setActivities(
+              Array.isArray(data.activities)
+                ? data.activities
+                : []
+            );
+          }
+        } else {
+          console.error(
+            "Activity request failed:",
+            response.status
+          );
+        }
+      } else {
+        console.error(
+          "Activity request failed:",
+          activityResult.reason
+        );
+      }
+    } catch (error) {
+      console.error("Dashboard error:", error);
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
+  fetchDashboard();
+
+  return () => {
+    cancelled = true;
+  };
+}, [navigate]);
+
+
+
+  // 🔹 Search user by phone
+
+const handleSearch = async () => {
+  const search = phone.trim();
+
+  if (!search) {
+    alert("Enter a phone number, email or name");
+    return;
+  }
+
+  const token = localStorage.getItem("adminToken");
+
+  if (!token) {
     navigate("/admin-login");
     return;
   }
 
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-
-      const [statsRes, activityRes] = await Promise.all([
-        fetch(
-          "https://paylynk-1.onrender.com/api/admin/stats",
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-            },
-          }
-        ),
-
-        fetch(
-          "https://paylynk-1.onrender.com/api/admin/activity",
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-            },
-          }
-        ),
-      ]);
-
-      const statsData = await statsRes.json();
-      const activityData = await activityRes.json();
-
-      // Invalid token
-      if (
-        statsData.message === "Invalid token" ||
-        statsData.message === "No token"
-      ) {
-        localStorage.removeItem("adminToken");
-        navigate("/admin-login");
-        return;
-      }
-
-      setStats(statsData);
-      setActivities(activityData.activities || []);
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchStats();
-
-}, [navigate]);
- 
-
-
-  // 🔹 Search user by phone
-  const handleSearch = async () => {
-  if (!phone) return alert("Enter search");
-
   try {
     const res = await fetch(
-      `https://paylynk-1.onrender.com/api/admin/users?search=${phone}`,
+      `https://paylynk-1.onrender.com/api/admin/users?search=${encodeURIComponent(search)}`,
       {
         headers: {
-          Authorization: `Bearer ${adminToken}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
 
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("adminToken");
+      navigate("/admin-login");
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Search failed: ${res.status}`);
+    }
+
     const data = await res.json();
 
-    if (data.users && data.users.length > 0) {
+    if (data.users?.length > 0) {
       navigate(`/admin/user/${data.users[0]._id}`);
     } else {
       alert("User not found");
     }
-
   } catch (error) {
-    console.error(error);
-    alert("Search failed");
+    console.error("Admin search error:", error);
+    alert("Unable to search users");
   }
 };
 
@@ -144,7 +205,7 @@ Linked Accounts
 </h3>
 
 <p className="text-3xl font-bold">
-{stats.totalAccounts}
+{stats.totalLinkedAccounts ?? 0}
 </p>
 </div>
 
