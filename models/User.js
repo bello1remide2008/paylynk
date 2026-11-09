@@ -104,10 +104,15 @@ virtualAccountBank: {
   ],
   default: "pending_email",
 },
-        resetPasswordToken: {
-      type:String,
-    resetPasswordExpire: Date,
-        },
+   resetPasswordToken: {
+  type: String,
+  default: null,
+},
+
+resetPasswordExpire: {
+  type: Date,
+  default: null,
+},
 isBlocked: {
   type: Boolean,
   default: false,
