@@ -122,42 +122,45 @@ export const registerInit = async (req, res, ) => {
 // ======================================
 
 
+
 export const verifyOtp = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const otp = String(req.body?.otp || "").trim();
+    const { userId, otp } = req.body;
 
-    if (!userId || !/^\d{6}$/.test(otp)) {
+    if (!userId || !otp) {
       return res.status(400).json({
         success: false,
-        message: "Valid user ID and 6-digit OTP are required",
-      });
-    }
-
-    if (!mongoose.isValidObjectId(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID",
+        message: "User ID and OTP are required",
       });
     }
 
     const user = await User.findById(userId);
 
-    if (!user || user.isVerified || user.isBlocked) {
-      return res.status(400).json({
+    if (!user) {
+      return res.status(404).json({
         success: false,
-        message: "Invalid or expired verification code",
+        message: "User not found",
       });
     }
 
-    if (
-      !user.otp ||
-      !user.otpExpires ||
-      new Date(user.otpExpires).getTime() <= Date.now()
-    ) {
+    if (user.isVerified) {
       return res.status(400).json({
         success: false,
-        message: "OTP expired or not found. Request a new one.",
+        message: "Email already verified",
+      });
+    }
+
+    if (!user.otp || !user.otpExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP not found. Request a new one.",
+      });
+    }
+
+    if (new Date(user.otpExpires).getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired. Request a new one.",
       });
     }
 
@@ -168,17 +171,10 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    if (String(user.otp) !== otp) {
-      await User.updateOne(
-        {
-          _id: user._id,
-          otp: user.otp,
-          otpAttempts: { $lt: 5 },
-        },
-        {
-          $inc: { otpAttempts: 1 },
-        }
-      );
+    if (String(user.otp) !== String(otp)) {
+      user.otpAttempts = (user.otpAttempts || 0) + 1;
+
+      await user.save();
 
       return res.status(400).json({
         success: false,
@@ -186,53 +182,34 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    const verifiedUser = await User.findOneAndUpdate(
-      {
-        _id: user._id,
-        isVerified: { $ne: true },
-        isBlocked: { $ne: true },
-        otp: user.otp,
-        otpExpires: { $gt: new Date() },
-        otpAttempts: { $lt: 5 },
-      },
-      {
-        $set: {
-          isVerified: true,
-          registrationStatus: "pending_identity",
-          otpAttempts: 0,
-        },
-        $unset: {
-          otp: "",
-          otpExpires: "",
-          otpLastSentAt: "",
-        },
-      },
-      { new: true }
-    );
+    // Email verified successfully.
+    user.isVerified = true;
 
-    if (!verifiedUser) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP expired or already used",
-      });
-    }
+    // Move user to the next registration stage.
+    user.registrationStatus = "pending_identity";
 
-    const token = generateToken(verifiedUser._id);
+    // Clear OTP.
+    user.otp = null;
+    user.otpExpires = null;
+    user.otpAttempts = 0;
+
+    await user.save();
+
+    const token = generateToken(user._id);
 
     return res.status(200).json({
       success: true,
       message: "Email verified successfully",
-      token,
-      registrationStatus: verifiedUser.registrationStatus,
+      token: generateToken(user._id),
+      registrationStatus: user.registrationStatus,
       nextStep: "/enter-bvn",
       user: {
-        _id: verifiedUser._id,
-        name: verifiedUser.name,
-        email: verifiedUser.email,
-        phone: verifiedUser.phone,
-        profileImage: verifiedUser.profileImage,
-        registrationStatus: verifiedUser.registrationStatus,
-        isVerified: verifiedUser.isVerified,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        profileImage: user.profileImage,
+        registrationStatus: user.registrationStatus,
       },
     });
   } catch (error) {
