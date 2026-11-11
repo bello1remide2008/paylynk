@@ -47,98 +47,83 @@ const AccountVerification = () => {
   // =========================
   // VERIFY ACCOUNT
   // =========================
-  const verifyAccount = async () => {
-    setError("");
+ 
+const verifyAccount = async () => {
+  setError("");
 
-    if (!token) {
-      setError("Your session has expired. Please login again.");
-      navigate("/login");
-      return;
-    }
+  if (!token) {
+    setError("Your session has expired. Please login again.");
+    navigate("/login");
+    return;
+  }
 
-    if (!selectedBank) {
-      setError("Please select a bank first.");
-      return;
-    }
+  if (!selectedBank) {
+    setError("Please select a bank first.");
+    return;
+  }
 
-    if (!accountNumber) {
-      setError("Please enter your account number.");
-      return;
-    }
+  if (!accountNumber) {
+    setError("Please enter your account number.");
+    return;
+  }
 
-    if (!/^\d{10}$/.test(accountNumber)) {
-      setError("Account number must contain exactly 10 digits.");
-      return;
-    }
+  if (!/^\d{10}$/.test(accountNumber)) {
+    setError("Account number must contain exactly 10 digits.");
+    return;
+  }
 
-    if (!selectedBank.code) {
-      setError("This bank does not have a valid bank code.");
-      return;
-    }
+  if (!selectedBank.code) {
+    setError("This bank does not have a valid bank code.");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await fetch(
-        `${API_URL}/api/paystack/resolve-account`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            accountNumber,
-            bankCode: selectedBank.code,
-          }),
-        }
+    // ===================================
+    // TEMPORARY DEMO RESPONSE
+    // Replace with Paystack API later
+    // ===================================
+
+    const data = {
+      success: true,
+      accountName: "JOHN DOE",
+      accountNumber: accountNumber,
+      bankCode: selectedBank.code,
+      isVerified: false,
+    };
+
+    // ===================================
+    // EXISTING VALIDATION
+    // ===================================
+
+    if (!data.success || !data.accountName) {
+      throw new Error(
+        data.message || "Account verification failed."
       );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.message || "Unable to verify bank account."
-        );
-      }
-
-      /*
-        Expected backend response:
-
-        {
-          success: true,
-          accountName: "JOHN DOE",
-          accountNumber: "0123456789",
-          bankCode: "044"
-        }
-      */
-
-      if (!data.success || !data.accountName) {
-        throw new Error(
-          data.message || "Account verification failed."
-        );
-      }
-
-      setAccountName(data.accountName);
-
-      // Keep the verified account number from backend if available
-      if (data.accountNumber) {
-        setAccountNumber(data.accountNumber);
-      }
-
-      setStep(2);
-
-    } catch (err) {
-      console.error("ACCOUNT VERIFICATION ERROR:", err);
-
-      setError(
-        err.message ||
-          "Unable to verify this account. Please try again."
-      );
-    } finally {
-      setLoading(false);
     }
-  };
+
+    setAccountName(data.accountName);
+
+    // Keep account number from response
+    if (data.accountNumber) {
+      setAccountNumber(data.accountNumber);
+    }
+
+    setStep(2);
+
+  } catch (err) {
+    console.error("ACCOUNT VERIFICATION ERROR:", err);
+
+    setError(
+      err.message ||
+        "Unable to verify this account. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // =========================
   // LINK VERIFIED ACCOUNT
