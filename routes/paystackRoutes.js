@@ -2,14 +2,14 @@
 import express from "express";
 
 import {
-  getBanks,
+fetchBanks,
   resolveAccount,
 } from "../controllers/paystackController.js";
 
 const router = express.Router();
 
 // Get list of banks
-router.get("/banks", getBanks);
+router.get("/fetch-banks", fetchBanks);
 
 // Resolve bank account details
 router.post("/resolve-account", resolveAccount);
