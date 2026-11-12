@@ -34,7 +34,7 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/linked",
   protect,
   getLinkedAccounts
 );
