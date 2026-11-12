@@ -1,3 +1,4 @@
+
 const banks = [
   { id: 1, name: "Access Bank", code: "044", shortName: "Access" },
   { id: 2, name: "Citibank", code: "023", shortName: "Citi" },
@@ -25,6 +26,12 @@ const banks = [
   { id: 24, name: "Unity Bank", code: "215", shortName: "Unity" },
   { id: 25, name: "Wema Bank", code: "035", shortName: "Wema" },
   { id: 26, name: "Zenith Bank", code: "057", shortName: "Zenith" },
+
+  // Additional banks
+  { id: 27, name: "SunTrust Bank", code: "100", shortName: "SunTrust" },
+  { id: 28, name: "TAJBank", code: "302", shortName: "TAJ" },
+  { id: 29, name: "Lotus Bank", code: "303", shortName: "Lotus" },
+  { id: 30, name: "Optimus Bank", code: "107", shortName: "Optimus" },
 ];
 
 export default banks;
