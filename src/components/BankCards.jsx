@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import GoBackButton from "./GoBackButton";
+import bankList from "./Banks";
 
 const API_URL = "https://paylynk-1.onrender.com/api/accounts";
 
@@ -79,33 +80,26 @@ const BankCards = () => {
   // =========================================================
   // FETCH BANKS
   // =========================================================
+const fetchBanks = async () => {
+  try {
+    setLoadingBanks(true);
+    setError("");
 
-  const fetchBanks = async () => {
-    try {
-      setLoadingBanks(true);
-      setError("");
+    // Temporary demo bank list
+    // No Paystack request required
+    const sortedBanks = [...bankList].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
-      const response = await fetch("https://paylynk-1.onrender.com/api/accounts/connect", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    setBanks(sortedBanks);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Unable to load banks");
-      }
-
-      setBanks(data.banks || []);
-    } catch (error) {
-      console.error("Fetch banks error:", error);
-      setError(error.message || "Unable to load banks");
-    } finally {
-      setLoadingBanks(false);
-    }
-  };
+  } catch (error) {
+    console.error("Fetch banks error:", error);
+    setError("Unable to load banks");
+  } finally {
+    setLoadingBanks(false);
+  }
+};
 
   // =========================================================
   // FETCH LINKED ACCOUNTS
