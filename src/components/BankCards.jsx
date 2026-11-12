@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import GoBackButton from "./GoBackButton";
-import bankList from "./Banks";
+import banks from "./Banks";
 
 const API_URL = "https://paylynk-1.onrender.com/api/accounts";
 
@@ -87,7 +87,7 @@ const fetchBanks = async () => {
 
     // Temporary demo bank list
     // No Paystack request required
-    const sortedBanks = [...bankList].sort((a, b) =>
+    const sortedBanks = [...banks].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
