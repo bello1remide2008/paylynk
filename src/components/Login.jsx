@@ -165,23 +165,18 @@ const Login = () => {
       // ==========================
       // NAVIGATE TO NEXT STEP
       // ==========================
-      const allowedRoutes = [
-        "/dashboard",
-        "/enter-bvn",
-        "/select-bank",
-        "/enter-account",
-        "/account-verification",
-      ];
+     
+      // ==========================
+      // NORMAL LOGIN NAVIGATION
+      // ==========================
 
-      const nextStep = allowedRoutes.includes(
-        data.nextStep
-      )
-        ? data.nextStep
-        : "/dashboard";
+      // Existing users go directly to dashboard.
+      // Registration continuation is handled separately.
 
-      navigate(nextStep, {
+      navigate("/dashboard", {
         replace: true,
       });
+
 
     } catch (error) {
       console.error("LOGIN ERROR:", error);
